@@ -1,16 +1,16 @@
 package me.noahvdaa.uqueue.commands;
 
-import me.noahvdaa.uqueue.config.ConfigValidator;
-import me.noahvdaa.uqueue.uQueue;
+import me.noahvdaa.uqueue.config.ConfigValidationHelper;
+import me.noahvdaa.uqueue.UQueue;
 import me.noahvdaa.uqueue.util.ChatUtil;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 
-public class uQueueCommand extends Command {
+public class UQueueCommand extends Command {
 
-	private final uQueue plugin;
+	private final UQueue plugin;
 
-	public uQueueCommand(uQueue plugin) {
+	public UQueueCommand(UQueue plugin) {
 		super("uqueue", "", "uq");
 		this.plugin = plugin;
 	}
@@ -31,7 +31,7 @@ public class uQueueCommand extends Command {
 				sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&6Reloading config file, please wait..."));
 				plugin.getConfig().forceReload();
 				// Verify config.
-				ConfigValidator.validateConfig(plugin.getConfig(), plugin.getLogger());
+				ConfigValidationHelper.validateConfig(plugin.getConfig(), plugin.getLogger());
 				sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&aReloaded config!"));
 				break;
 			case "":

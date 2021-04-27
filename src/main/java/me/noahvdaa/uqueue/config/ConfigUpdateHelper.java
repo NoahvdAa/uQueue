@@ -6,14 +6,14 @@ import de.leonhard.storage.LightningBuilder;
 import de.leonhard.storage.internal.settings.ConfigSettings;
 import de.leonhard.storage.internal.settings.DataType;
 import de.leonhard.storage.internal.settings.ReloadSettings;
-import me.noahvdaa.uqueue.uQueue;
+import me.noahvdaa.uqueue.UQueue;
 
 import java.io.File;
 import java.io.IOException;
 
-public class ConfigUpdater {
+public class ConfigUpdateHelper {
 
-	public static boolean updateConfig(Config config, uQueue plugin) {
+	public static boolean updateConfig(Config config, UQueue plugin) {
 		try {
 			File configFile = new File(plugin.getDataFolder() + File.separator + "config.yml");
 			File backupFile = new File(plugin.getDataFolder() + File.separator + "config.backup.yml");

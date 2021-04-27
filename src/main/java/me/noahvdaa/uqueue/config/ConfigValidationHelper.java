@@ -4,7 +4,7 @@ import de.leonhard.storage.Config;
 
 import java.util.logging.Logger;
 
-public class ConfigValidator {
+public class ConfigValidationHelper {
 
 	public static void validateConfig(Config config, Logger logger) {
 		String serverListMode = config.getString("Queueing.ServerListMode");

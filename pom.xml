@@ -5,8 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.noahvdaa.uqueue</groupId>
-    <artifactId>uQueue</artifactId>
+    <artifactId>UQueue</artifactId>
     <version>1.0.0</version>
+    <name>uQueue</name>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -14,7 +15,7 @@
     </properties>
 
     <build>
-        <finalName>${project.artifactId}-${project.version}</finalName>
+        <finalName>uQueue-${project.version}</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>

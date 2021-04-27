@@ -1,6 +1,6 @@
 package me.noahvdaa.uqueue.util;
 
-import me.noahvdaa.uqueue.uQueue;
+import me.noahvdaa.uqueue.UQueue;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class PermissionUtil {
@@ -24,7 +24,7 @@ public class PermissionUtil {
 		return priority;
 	}
 
-	public static boolean mayQueueForServer(uQueue plugin, ProxiedPlayer p, String server) {
+	public static boolean mayQueueForServer(UQueue plugin, ProxiedPlayer p, String server) {
 		String serverListMode = plugin.getConfig().getString("Queueing.ServerListMode");
 		// We can use if/else here, because the config validator ensures that the setting
 		// is always either 'blacklist' or 'whitelist'.

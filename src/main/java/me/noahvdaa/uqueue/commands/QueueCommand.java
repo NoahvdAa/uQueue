@@ -1,6 +1,6 @@
 package me.noahvdaa.uqueue.commands;
 
-import me.noahvdaa.uqueue.uQueue;
+import me.noahvdaa.uqueue.UQueue;
 import me.noahvdaa.uqueue.util.ChatUtil;
 import me.noahvdaa.uqueue.util.PermissionUtil;
 import net.md_5.bungee.api.CommandSender;
@@ -11,9 +11,9 @@ import net.md_5.bungee.api.plugin.Command;
 
 public class QueueCommand extends Command {
 
-	private final uQueue plugin;
+	private final UQueue plugin;
 
-	public QueueCommand(uQueue plugin) {
+	public QueueCommand(UQueue plugin) {
 		super("queue");
 		this.plugin = plugin;
 	}
