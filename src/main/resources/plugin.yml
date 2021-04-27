@@ -1,0 +1,5 @@
+name: uQueue
+main: me.noahvdaa.uqueue.fallback.BukkitFallback
+version: "NO-BUKKIT"
+author: NoahvdAa
+api-version: 1.13

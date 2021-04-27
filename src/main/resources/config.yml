@@ -1,0 +1,28 @@
+#
+#         ____
+#        / __ \
+#  _   _| |  | |_   _  ___ _   _  ___
+# | | | | |  | | | | |/ _ \ | | |/ _ \
+# | |_| | |__| | |_| |  __/ |_| |  __/
+#  \__,_|\___\_\\__,_|\___|\__,_|\___|
+#
+# By NoahvdAa
+#
+
+Chat:
+  # The prefix that is shown in front of every message.
+  Prefix: "&8[&2u&aQueue&8]"
+
+Queueing:
+  # The mode the server list below this setting should operate in.
+  # Available options:
+  #   - blacklist: Players that want to queue for servers in this list require the permission uqueue.server.<server>.
+  #                All other servers can be queued for without any extra permissions.
+  #   - whitelist: Players that want to queue for servers in this list don't require any extra permissions.
+  #                All other servers can only be queued for if the player has the permission uqueue.server.<server>.
+  ServerListMode: blacklist
+  ServerList:
+    - blacklistedserver
+
+# DO NOT CHANGE THIS! THIS IS AUTOMATICALLY UPDATED BY THE PLUGIN
+configVersion: 2
