@@ -7,16 +7,20 @@ import de.leonhard.storage.internal.settings.DataType;
 import de.leonhard.storage.internal.settings.ReloadSettings;
 import me.noahvdaa.uqueue.commands.QueueCommand;
 import me.noahvdaa.uqueue.commands.UQueueCommand;
+import me.noahvdaa.uqueue.commands.UnqueueCommand;
 import me.noahvdaa.uqueue.config.ConfigUpdateHelper;
 import me.noahvdaa.uqueue.config.ConfigValidationHelper;
 import me.noahvdaa.uqueue.config.messages.MessagesUpdateHelper;
+import me.noahvdaa.uqueue.listener.PlayerListener;
+import me.noahvdaa.uqueue.util.ChatUtil;
+import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.TreeMap;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class UQueue extends Plugin {
 
@@ -25,13 +29,20 @@ public class UQueue extends Plugin {
 	private Config messages;
 	public static final int configVersion = 1;
 	public static final int messagesVersion = 1;
-	public HashMap<String, TreeMap<Integer, ArrayList<UUID>>> queue;
+	// Contains the server a player is currently queued for.
+	public HashMap<UUID, String> queuedFor;
+	// Contains the priority the player had when they queued for this server.
+	public HashMap<UUID, Integer> queuePriority;
+	// Queues per server.
+	public HashMap<String, List<UUID>> queues;
 
 	@Override
 	public void onEnable() {
 		instance = this;
 
-		queue = new HashMap<>();
+		queuedFor = new HashMap<>();
+		queuePriority = new HashMap<>();
+		queues = new HashMap<>();
 
 		// Initialize config.
 		config = LightningBuilder
@@ -53,7 +64,11 @@ public class UQueue extends Plugin {
 
 		// Register commands.
 		getProxy().getPluginManager().registerCommand(this, new QueueCommand(this));
+		getProxy().getPluginManager().registerCommand(this, new UnqueueCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new UQueueCommand(this));
+
+		// Register events.
+		getProxy().getPluginManager().registerListener(this, new PlayerListener(this));
 
 		// Update config if needed.
 		if (config.getInt("configVersion") != configVersion) {
@@ -71,6 +86,20 @@ public class UQueue extends Plugin {
 
 		// Verify config.
 		ConfigValidationHelper.validateConfig(config, getLogger());
+
+		getProxy().getScheduler().schedule(this, new Runnable() {
+			@Override
+			public void run() {
+				for (String server : queues.keySet()) {
+					List<UUID> queue = queues.get(server);
+					String queueSize = Integer.toString(queue.size());
+					for (UUID player : queue) {
+						String position = Integer.toString(queue.indexOf(player) + 1);
+						getProxy().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(instance, "Notifications.QueuePosition", position, queueSize, server));
+					}
+				}
+			}
+		}, 1, 1, TimeUnit.SECONDS);
 	}
 
 	public static UQueue getInstance() {

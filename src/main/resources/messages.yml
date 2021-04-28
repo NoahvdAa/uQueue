@@ -10,10 +10,19 @@
 #
 Commands:
   Queue:
-    NotAllowedToQueue: "&cYou aren't allowed to queue for this server."
+    AlreadyHere: "&cYou're already on this server!"
+    AlreadyQueuedForSameServer: "&cYou're already queued for that server."
+    LeftQueueFor: "&eLeft the queue for &b%1%&e."
+    NotAllowedToQueue: "&cYou aren't allowed to queue for that server."
+    NowQueuedFor: "&aYou are now queued for %1%."
     ServerDoesntExist: "&cThat server doesn't exist."
   uQueue:
     NoPermissions: "&cYou don't have enough permissions to use subcommands."
+  Unqueue:
+    NotQueued: "&cYou aren't queued for any server."
+
+Notifications:
+  QueuePosition: "&7You are in position %1%/%2% for %3%."
 
 # DO NOT CHANGE THIS! THIS IS AUTOMATICALLY UPDATED BY THE PLUGIN
 messagesVersion: 1

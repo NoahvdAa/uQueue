@@ -23,6 +23,8 @@ Queueing:
   ServerListMode: blacklist
   ServerList:
     - blacklistedserver
+  # The amount of players to send to the server they're queued for.
+  PlayersPerSecond: 1
 
 # DO NOT CHANGE THIS! THIS IS AUTOMATICALLY UPDATED BY THE PLUGIN
 configVersion: 1
