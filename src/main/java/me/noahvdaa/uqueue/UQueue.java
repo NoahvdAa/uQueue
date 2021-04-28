@@ -9,6 +9,7 @@ import me.noahvdaa.uqueue.commands.QueueCommand;
 import me.noahvdaa.uqueue.commands.UQueueCommand;
 import me.noahvdaa.uqueue.config.ConfigUpdateHelper;
 import me.noahvdaa.uqueue.config.ConfigValidationHelper;
+import me.noahvdaa.uqueue.config.messages.MessagesUpdateHelper;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.io.File;
@@ -21,14 +22,16 @@ public class UQueue extends Plugin {
 
 	private static UQueue instance;
 	private Config config;
-	public static final int configVersion = 2;
+	private Config messages;
+	public static final int configVersion = 1;
+	public static final int messagesVersion = 1;
 	public HashMap<String, TreeMap<Integer, ArrayList<UUID>>> queue;
 
 	@Override
 	public void onEnable() {
 		instance = this;
 
-		queue = new HashMap<String, TreeMap<Integer, ArrayList<UUID>>>();
+		queue = new HashMap<>();
 
 		// Initialize config.
 		config = LightningBuilder
@@ -39,15 +42,31 @@ public class UQueue extends Plugin {
 				.setConfigSettings(ConfigSettings.PRESERVE_COMMENTS)
 				.createConfig();
 
+		// Initialize messages.
+		messages = LightningBuilder
+				.fromFile(new File(getDataFolder().getPath() + File.separator + "messages.yml"))
+				.addInputStreamFromResource("messages.yml")
+				.setDataType(DataType.SORTED)
+				.setReloadSettings(ReloadSettings.MANUALLY)
+				.setConfigSettings(ConfigSettings.PRESERVE_COMMENTS)
+				.createConfig();
+
 		// Register commands.
 		getProxy().getPluginManager().registerCommand(this, new QueueCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new UQueueCommand(this));
 
 		// Update config if needed.
-		if(config.getInt("configVersion") != configVersion){
+		if (config.getInt("configVersion") != configVersion) {
 			boolean updateResult = ConfigUpdateHelper.updateConfig(config, this);
 			if (!updateResult) return;
 			config.forceReload();
+		}
+
+		// Update messages if needed.
+		if (messages.getInt("configVersion") != messagesVersion) {
+			boolean msgUpdateResult = MessagesUpdateHelper.updateMessages(config, this);
+			if (!msgUpdateResult) return;
+			messages.forceReload();
 		}
 
 		// Verify config.
@@ -59,7 +78,11 @@ public class UQueue extends Plugin {
 	}
 
 	public Config getConfig() {
-		return config;
+		return this.config;
+	}
+
+	public Config getMessages() {
+		return this.messages;
 	}
 
 }

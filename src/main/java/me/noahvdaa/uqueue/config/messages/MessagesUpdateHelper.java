@@ -1,4 +1,4 @@
-package me.noahvdaa.uqueue.config;
+package me.noahvdaa.uqueue.config.messages;
 
 import com.google.common.io.Files;
 import de.leonhard.storage.Config;
@@ -11,20 +11,20 @@ import me.noahvdaa.uqueue.UQueue;
 import java.io.File;
 import java.io.IOException;
 
-public class ConfigUpdateHelper {
+public class MessagesUpdateHelper {
 
-	public static boolean updateConfig(Config config, UQueue plugin) {
+	public static boolean updateMessages(Config config, UQueue plugin) {
 		try {
-			File configFile = new File(plugin.getDataFolder() + File.separator + "config.yml");
-			File backupFile = new File(plugin.getDataFolder() + File.separator + "config.backup.yml");
-			Files.copy(configFile, backupFile);
+			File messagesFile = new File(plugin.getDataFolder() + File.separator + "messages.yml");
+			File backupFile = new File(plugin.getDataFolder() + File.separator + "messages.backup.yml");
+			Files.copy(messagesFile, backupFile);
 
-			String tmpName = "config." + System.currentTimeMillis() + ".yml";
+			String tmpName = "messages." + System.currentTimeMillis() + ".yml";
 			File tmpFile = new File(plugin.getDataFolder().getPath() + File.separator + tmpName);
 
 			Config newConfig = LightningBuilder
 					.fromPath(tmpName, plugin.getDataFolder().getPath())
-					.addInputStreamFromResource("config.yml")
+					.addInputStreamFromResource("messages.yml")
 					.setDataType(DataType.SORTED)
 					.setReloadSettings(ReloadSettings.MANUALLY)
 					.setConfigSettings(ConfigSettings.PRESERVE_COMMENTS)
@@ -34,13 +34,13 @@ public class ConfigUpdateHelper {
 				newConfig.set(key, config.get(key));
 			}
 
-			newConfig.set("configVersion", UQueue.configVersion);
+			newConfig.set("messagesVersion", UQueue.messagesVersion);
 
 			newConfig.write();
-			configFile.delete();
-			Files.move(tmpFile, configFile);
+			messagesFile.delete();
+			Files.move(tmpFile, messagesFile);
 		} catch (IOException e) {
-			plugin.getLogger().warning("Failed to update config:");
+			plugin.getLogger().warning("Failed to update messages:");
 			e.printStackTrace();
 			return false;
 		}

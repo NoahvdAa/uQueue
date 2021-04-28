@@ -27,25 +27,25 @@ public class QueueCommand extends Command {
 		ProxiedPlayer p = (ProxiedPlayer) sender;
 
 		if (args.length != 1) {
-			sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&cThis command can only be used by players."));
+			sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&cUsage: /queue <server>"));
 			return;
 		}
 
 		String target = args[0].toLowerCase();
 
 		if(!PermissionUtil.mayQueueForServer(plugin, p, target)){
-			sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&cYou aren't allowed to queue for this server."));
+			sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.NotAllowedToQueue"));
 			return;
 		}
 
 		ServerInfo server = ProxyServer.getInstance().getServerInfo(args[0]);
 
 		if(server == null){
-			sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&cThat server doesn't exist."));
+			sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.ServerDoesntExist"));
 			return;
 		}
 
-		// Todo: implement queueing here.
+		// TODO: implement queueing here.
 	}
 
 }

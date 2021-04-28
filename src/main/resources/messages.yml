@@ -1,0 +1,19 @@
+#
+#         ____
+#        / __ \
+#  _   _| |  | |_   _  ___ _   _  ___
+# | | | | |  | | | | |/ _ \ | | |/ _ \
+# | |_| | |__| | |_| |  __/ |_| |  __/
+#  \__,_|\___\_\\__,_|\___|\__,_|\___|
+#
+# By NoahvdAa
+#
+Commands:
+  Queue:
+    NotAllowedToQueue: "&cYou aren't allowed to queue for this server."
+    ServerDoesntExist: "&cThat server doesn't exist."
+  uQueue:
+    NoPermissions: "&cYou don't have enough permissions to use subcommands."
+
+# DO NOT CHANGE THIS! THIS IS AUTOMATICALLY UPDATED BY THE PLUGIN
+messagesVersion: 1

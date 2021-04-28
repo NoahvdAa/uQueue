@@ -19,4 +19,14 @@ public class ChatUtil {
 		return colorizeIntoComponent(plugin.getConfig().getString("Chat.Prefix") + " " + input);
 	}
 
+	public static BaseComponent getConfigPlaceholderMessageAsComponent(UQueue plugin, String message, String... args) {
+		String msg = plugin.getMessages().getString(message);
+		int i = 0;
+		for (String arg : args) {
+			i++;
+			msg = msg.replaceAll("%" + i + "%", arg);
+		}
+		return colorizeIntoComponent(plugin.getConfig().getString("Chat.Prefix") + " " + msg);
+	}
+
 }

@@ -37,7 +37,7 @@ public class UQueueCommand extends Command {
 			case "":
 				sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&eThis server is running &buQueue v" + plugin.getDescription().getVersion() + " &eby &bNoahvdAa&e."));
 				if (!sender.hasPermission("uqueue.admin")) {
-					sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&cYou don't have enough permissions to use subcommands."));
+					sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.uQueue.NoPermissions"));
 				} else {
 					sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&eType &b/uqueue help &efor a list of commands."));
 				}
