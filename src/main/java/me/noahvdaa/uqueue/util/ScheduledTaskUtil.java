@@ -1,5 +1,6 @@
 package me.noahvdaa.uqueue.util;
 
+import me.noahvdaa.uqueue.ServerStatus;
 import me.noahvdaa.uqueue.UQueue;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.ProxyServer;
@@ -16,7 +17,7 @@ public class ScheduledTaskUtil {
 			List<UUID> queue = plugin.queues.get(server);
 			String queueSize = Integer.toString(queue.size());
 			String serverStatus;
-			if (!plugin.serverOnlineStatus.containsKey(server) || plugin.serverOnlineStatus.get(server)) {
+			if (!plugin.serverOnlineStatus.containsKey(server) || plugin.serverOnlineStatus.get(server) != ServerStatus.OFFLINE) {
 				serverStatus = "online";
 			} else {
 				long offlineFor = 0L;
@@ -43,8 +44,9 @@ public class ScheduledTaskUtil {
 						break;
 				}
 			}
-			// Server not online.
-			if (!plugin.serverOnlineStatus.containsKey(server) || !plugin.serverOnlineStatus.get(server)) continue;
+			// Server not online or no space.
+			if (!plugin.serverOnlineStatus.containsKey(server) || plugin.serverOnlineStatus.get(server) != ServerStatus.SPACE_AVAILABLE)
+				continue;
 			ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(server);
 			for (int i = 0; i < queue.size() && i < plugin.getConfig().getInt("Queueing.PlayersPerSecond"); i++) {
 				UUID target = queue.get(i);
@@ -74,8 +76,11 @@ public class ScheduledTaskUtil {
 	public static void processServerPings(UQueue plugin) {
 		for (String server : plugin.queueableServers) {
 			ProxyServer.getInstance().getServerInfo(server).ping((serverPing, throwable) -> {
-				boolean status = serverPing != null;
-				boolean previousStatus = plugin.serverOnlineStatus.containsKey(server) ? plugin.serverOnlineStatus.get(server) : false;
+				ServerStatus status = ServerStatus.OFFLINE;
+				if (serverPing != null) {
+					status = serverPing.getPlayers().getOnline() >= serverPing.getPlayers().getMax() ? ServerStatus.FULL : ServerStatus.SPACE_AVAILABLE;
+				}
+				ServerStatus previousStatus = plugin.serverOnlineStatus.get(server);
 				plugin.serverOnlineStatus.put(server, status);
 				if (!plugin.serverStatusSince.containsKey(server)) {
 					plugin.serverStatusSince.put(server, System.currentTimeMillis());

@@ -36,7 +36,7 @@ public class UQueue extends Plugin {
 	// Queues per server.
 	public HashMap<String, List<UUID>> queues;
 	// Server online status
-	public HashMap<String, Boolean> serverOnlineStatus;
+	public HashMap<String, ServerStatus> serverOnlineStatus;
 	// Servers that have been queued for since load. Used for pinging.
 	public List<String> queueableServers;
 	// How long have these servers had their current status?
