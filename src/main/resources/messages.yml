@@ -23,6 +23,7 @@ Commands:
 
 Notifications:
   QueuePosition: "&7You are in position %1%/%2% for %3%."
+  ServerIsFull: "&c%1% is full. &7Your are in position %2%/%3%."
   ServerIsOffline: "&c%1% is offline. &7Your are in position %2%/%3%."
   ServerIsRestarting: "&c%1% is restarting. &7Your are in position %2%/%3%."
   SendingYou: "&7Sending you to %1%..."

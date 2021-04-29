@@ -18,7 +18,11 @@ public class ScheduledTaskUtil {
 			String queueSize = Integer.toString(queue.size());
 			String serverStatus;
 			if (!plugin.serverOnlineStatus.containsKey(server) || plugin.serverOnlineStatus.get(server) != ServerStatus.OFFLINE) {
-				serverStatus = "online";
+				if (plugin.serverOnlineStatus.get(server) == ServerStatus.SPACE_AVAILABLE) {
+					serverStatus = "online";
+				} else {
+					serverStatus = "full";
+				}
 			} else {
 				long offlineFor = 0L;
 				if (plugin.serverStatusSince.containsKey(server)) {
@@ -35,6 +39,9 @@ public class ScheduledTaskUtil {
 				switch (serverStatus) {
 					default:
 						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(plugin, "Notifications.QueuePosition", position, queueSize, server));
+						break;
+					case "full":
+						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(plugin, "Notifications.ServerIsFull", server, position, queueSize));
 						break;
 					case "offline":
 						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(plugin, "Notifications.ServerIsOffline", server, position, queueSize));
@@ -80,12 +87,9 @@ public class ScheduledTaskUtil {
 	public static void processServerPings(UQueue plugin) {
 		for (String server : plugin.queueableServers) {
 			if (PerServerConfigUtil.getBoolean(plugin, server, "NoPingIfQueueEmpty") && !plugin.queues.containsKey(server)) {
-				if (plugin.slotsFree.containsKey(server))
-					plugin.slotsFree.remove(server);
-				if (plugin.serverOnlineStatus.containsKey(server))
-					plugin.serverOnlineStatus.remove(server);
-				if (plugin.serverStatusSince.containsKey(server))
-					plugin.serverStatusSince.remove(server);
+				plugin.slotsFree.remove(server);
+				plugin.serverOnlineStatus.remove(server);
+				plugin.serverStatusSince.remove(server);
 				continue;
 			}
 			ProxyServer.getInstance().getServerInfo(server).ping((serverPing, throwable) -> {
