@@ -123,7 +123,7 @@ public class UQueue extends Plugin {
 					for (UUID player : queue) {
 						String position = Integer.toString(queue.indexOf(player) + 1);
 						switch (serverStatus) {
-							case "online":
+							default:
 								getProxy().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(instance, "Notifications.QueuePosition", position, queueSize, server));
 								break;
 							case "offline":
