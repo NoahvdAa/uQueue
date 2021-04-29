@@ -90,8 +90,8 @@ public class UQueue extends Plugin {
 		}
 
 		// Update messages if needed.
-		if (messages.getInt("configVersion") != messagesVersion) {
-			boolean msgUpdateResult = MessagesUpdateHelper.updateMessages(config, this);
+		if (messages.getInt("messagesVersion") != messagesVersion) {
+			boolean msgUpdateResult = MessagesUpdateHelper.updateMessages(messages, this);
 			if (!msgUpdateResult) return;
 			messages.forceReload();
 		}
