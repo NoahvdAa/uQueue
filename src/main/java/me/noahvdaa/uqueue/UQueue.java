@@ -149,12 +149,12 @@ public class UQueue extends Plugin {
 						@Override
 						public void done(ServerPing serverPing, Throwable throwable) {
 							boolean status = serverPing != null;
+							boolean previousStatus = serverOnlineStatus.get(server);
 							serverOnlineStatus.put(server, status);
 							if (!serverStatusSince.containsKey(server)) {
 								serverStatusSince.put(server, System.currentTimeMillis());
 								return;
 							}
-							boolean previousStatus = serverOnlineStatus.get(server);
 							if (previousStatus != status) serverStatusSince.put(server, System.currentTimeMillis());
 						}
 					});
