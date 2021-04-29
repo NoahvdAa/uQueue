@@ -40,6 +40,9 @@ public class QueueUtil {
 			// Clean up unused queues.
 			plugin.queues.remove(queuedFor);
 		}
+		if (plugin.connectionAttempts.containsKey(target)) {
+			plugin.connectionAttempts.remove(target);
+		}
 	}
 
 }

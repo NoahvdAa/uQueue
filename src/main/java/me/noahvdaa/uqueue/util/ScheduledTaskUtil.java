@@ -3,6 +3,8 @@ package me.noahvdaa.uqueue.util;
 import me.noahvdaa.uqueue.UQueue;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.List;
 import java.util.UUID;
@@ -41,8 +43,31 @@ public class ScheduledTaskUtil {
 						break;
 				}
 			}
-			// Still being pinged.
-			if (!plugin.serverOnlineStatus.containsKey(server)) continue;
+			// Server not online.
+			if (!plugin.serverOnlineStatus.containsKey(server) || !plugin.serverOnlineStatus.get(server)) continue;
+			ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(server);
+			for (int i = 0; i < queue.size() && i < plugin.getConfig().getInt("Queueing.PlayersPerSecond"); i++) {
+				UUID target = queue.get(i);
+				ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(target);
+
+				if (proxiedPlayer.getServer().getInfo().getName().equals(serverInfo.getName())) {
+					QueueUtil.removeFromQueue(plugin, target);
+					return;
+				}
+
+				if (!plugin.connectionAttempts.containsKey(target))
+					plugin.connectionAttempts.put(target, 0);
+
+				plugin.connectionAttempts.put(target, plugin.connectionAttempts.get(target) + 1);
+
+				proxiedPlayer.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.SendingYou", server));
+				proxiedPlayer.connect(serverInfo);
+
+				if (plugin.connectionAttempts.get(target) > plugin.getConfig().getInt("Queueing.MaxSendAttempts")) {
+					QueueUtil.removeFromQueue(plugin, target);
+					proxiedPlayer.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.ReachedMaxAttempts", server));
+				}
+			}
 		}
 	}
 
@@ -50,7 +75,7 @@ public class ScheduledTaskUtil {
 		for (String server : plugin.queueableServers) {
 			ProxyServer.getInstance().getServerInfo(server).ping((serverPing, throwable) -> {
 				boolean status = serverPing != null;
-				boolean previousStatus = plugin.serverOnlineStatus.get(server);
+				boolean previousStatus = plugin.serverOnlineStatus.containsKey(server) ? plugin.serverOnlineStatus.get(server) : false;
 				plugin.serverOnlineStatus.put(server, status);
 				if (!plugin.serverStatusSince.containsKey(server)) {
 					plugin.serverStatusSince.put(server, System.currentTimeMillis());

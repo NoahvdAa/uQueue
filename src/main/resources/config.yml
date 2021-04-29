@@ -28,6 +28,9 @@ Queueing:
   # The amount of seconds before a offline server is marked as "offline", rather than "restarting".
   # Set to 0 to effectively disable
   RestartLength: 30
+  # The maximum amount of attempts to send someone to their target server before they're removed from queue.
+  # Setting this too high may clog up your queue when someone isn't whitelisted, for example.
+  MaxSendAttempts: 5
 
 
 # DO NOT CHANGE THIS! THIS IS AUTOMATICALLY UPDATED BY THE PLUGIN

@@ -41,6 +41,8 @@ public class UQueue extends Plugin {
 	public List<String> queueableServers;
 	// How long have these servers had their current status?
 	public HashMap<String, Long> serverStatusSince;
+	// Amount of times we've tried to connect the player.
+	public HashMap<UUID, Integer> connectionAttempts;
 
 	@Override
 	public void onEnable() {
@@ -52,6 +54,7 @@ public class UQueue extends Plugin {
 		serverOnlineStatus = new HashMap<>();
 		queueableServers = new ArrayList<>();
 		serverStatusSince = new HashMap<>();
+		connectionAttempts = new HashMap<>();
 
 		// Initialize config.
 		config = LightningBuilder

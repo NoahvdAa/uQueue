@@ -25,6 +25,8 @@ Notifications:
   QueuePosition: "&7You are in position %1%/%2% for %3%."
   ServerIsOffline: "&c%1% is offline. &7Your are in position %2%/%3%."
   ServerIsRestarting: "&c%1% is restarting. &7Your are in position %2%/%3%."
+  SendingYou: "&7Sending you to %1%..."
+  ReachedMaxAttempts: "&cFailed to connect you to %1%: reached maximum ammount of connection attempts."
 
 # DO NOT CHANGE THIS! THIS IS AUTOMATICALLY UPDATED BY THE PLUGIN
 messagesVersion: 1
