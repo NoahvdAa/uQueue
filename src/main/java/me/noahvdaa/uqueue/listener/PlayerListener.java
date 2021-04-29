@@ -2,6 +2,7 @@ package me.noahvdaa.uqueue.listener;
 
 import me.noahvdaa.uqueue.UQueue;
 import me.noahvdaa.uqueue.util.QueueUtil;
+import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -30,6 +31,13 @@ public class PlayerListener implements Listener {
 		if (!plugin.queuedFor.containsKey(player) || !plugin.queuedFor.get(player).equals(e.getServer().getInfo().getName()))
 			return;
 		QueueUtil.removeFromQueue(plugin, player);
+	}
+
+	@EventHandler
+	public void onChat(ChatEvent e) {
+		if (!plugin.getConfig().getBoolean("Chat.HijackServerCommand")) return;
+		if (!e.getMessage().toLowerCase().startsWith("/server")) return;
+		e.setMessage(e.getMessage().replaceAll("^\\/server", "/queue"));
 	}
 
 }

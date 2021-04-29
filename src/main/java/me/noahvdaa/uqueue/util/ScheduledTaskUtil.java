@@ -86,7 +86,7 @@ public class ScheduledTaskUtil {
 					plugin.serverStatusSince.put(server, System.currentTimeMillis());
 					return;
 				}
-				if (previousStatus != status) plugin.serverStatusSince.put(server, System.currentTimeMillis());
+				if (!previousStatus.equals(status)) plugin.serverStatusSince.put(server, System.currentTimeMillis());
 			});
 		}
 	}

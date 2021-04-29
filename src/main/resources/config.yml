@@ -12,6 +12,8 @@
 Chat:
   # The prefix that is shown in front of every message.
   Prefix: "&8[&2u&aQueue&8]"
+  # If this is enabled, /server will act the same as /queue.
+  HijackServerCommand: false
 
 Queueing:
   # The mode the server list below this setting should operate in.
