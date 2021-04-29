@@ -1,0 +1,21 @@
+#
+#         ____
+#        / __ \
+#  _   _| |  | |_   _  ___ _   _  ___
+# | | | | |  | | | | |/ _ \ | | |/ _ \
+# | |_| | |__| | |_| |  __/ |_| |  __/
+#  \__,_|\___\_\\__,_|\___|\__,_|\___|
+#
+# By NoahvdAa
+#
+# This file contains per-server settings.
+# All values are optional.
+# Example server:
+# servername:
+#   PlayersPerSecond: 2
+#   RestartLength: 60
+#   MaxSendAttempts: 10
+exampleserver:
+  PlayersPerSecond: 2
+  RestartLength: 60
+  MaxSendAttempts: 10

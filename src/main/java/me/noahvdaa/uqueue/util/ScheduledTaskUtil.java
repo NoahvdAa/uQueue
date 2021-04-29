@@ -24,7 +24,7 @@ public class ScheduledTaskUtil {
 				if (plugin.serverStatusSince.containsKey(server)) {
 					offlineFor = System.currentTimeMillis() - plugin.serverStatusSince.get(server);
 				}
-				if (offlineFor > plugin.getConfig().getInt("Queueing.RestartLength") * 1000L) {
+				if (offlineFor > PerServerConfigUtil.getInt(plugin, server, "RestartLength") * 1000L) {
 					serverStatus = "offline";
 				} else {
 					serverStatus = "restarting";
@@ -51,7 +51,7 @@ public class ScheduledTaskUtil {
 			if (!plugin.serverOnlineStatus.containsKey(server) || plugin.serverOnlineStatus.get(server) != ServerStatus.SPACE_AVAILABLE)
 				continue;
 			ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(server);
-			for (int i = 0; i < queue.size() && i < plugin.getConfig().getInt("Queueing.PlayersPerSecond"); i++) {
+			for (int i = 0; i < queue.size() && i < PerServerConfigUtil.getInt(plugin, server, "PlayersPerSecond"); i++) {
 				UUID target = queue.get(i);
 				ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(target);
 
@@ -68,7 +68,7 @@ public class ScheduledTaskUtil {
 				proxiedPlayer.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.SendingYou", server));
 				proxiedPlayer.connect(serverInfo);
 
-				if (plugin.connectionAttempts.get(target) > plugin.getConfig().getInt("Queueing.MaxSendAttempts")) {
+				if (plugin.connectionAttempts.get(target) > PerServerConfigUtil.getInt(plugin, server, "MaxSendAttempts")) {
 					QueueUtil.removeFromQueue(plugin, target);
 					proxiedPlayer.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.ReachedMaxAttempts", server));
 				}

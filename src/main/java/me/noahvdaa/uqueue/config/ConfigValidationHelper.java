@@ -12,6 +12,7 @@ public class ConfigValidationHelper {
 			logger.warning("Unexpected value '" + serverListMode + "' for Queueing->ServerListMode. Accepted values are: blacklist, whitelist. Falling back to default value, 'blacklist'.");
 			config.set("Queueing.ServerListMode", "blacklist");
 		}
+		// TODO: Validate entire config here.
 	}
 
 }

@@ -12,6 +12,8 @@ public class ReloadSubCommand {
 		plugin.getConfig().forceReload();
 		// Verify config.
 		ConfigValidationHelper.validateConfig(plugin.getConfig(), plugin.getLogger());
+		plugin.getMessages().forceReload();
+		plugin.getPerServerConfig().forceReload();
 		sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&aReloaded config!"));
 	}
 

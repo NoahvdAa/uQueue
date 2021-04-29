@@ -27,6 +27,7 @@ public class UQueue extends Plugin {
 	private static UQueue instance;
 	private Config config;
 	private Config messages;
+	private Config perServerConfig;
 
 	public static final int configVersion = 1;
 	public static final int messagesVersion = 1;
@@ -97,6 +98,14 @@ public class UQueue extends Plugin {
 				.setConfigSettings(ConfigSettings.PRESERVE_COMMENTS)
 				.createConfig();
 
+		// Initialize per server config.
+		perServerConfig = LightningBuilder
+				.fromFile(new File(getDataFolder().getPath() + File.separator + "servers.yml"))
+				.addInputStreamFromResource("servers.yml")
+				.setDataType(DataType.SORTED)
+				.setReloadSettings(ReloadSettings.MANUALLY)
+				.setConfigSettings(ConfigSettings.PRESERVE_COMMENTS)
+				.createConfig();
 
 		// Update config if needed.
 		if (config.getInt("configVersion") != configVersion) {
@@ -126,6 +135,10 @@ public class UQueue extends Plugin {
 
 	public Config getMessages() {
 		return this.messages;
+	}
+
+	public Config getPerServerConfig() {
+		return this.perServerConfig;
 	}
 
 }
