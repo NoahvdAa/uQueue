@@ -12,10 +12,7 @@ import me.noahvdaa.uqueue.config.ConfigUpdateHelper;
 import me.noahvdaa.uqueue.config.ConfigValidationHelper;
 import me.noahvdaa.uqueue.config.messages.MessagesUpdateHelper;
 import me.noahvdaa.uqueue.listener.PlayerListener;
-import me.noahvdaa.uqueue.util.ChatUtil;
-import net.md_5.bungee.api.Callback;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.ServerPing;
+import me.noahvdaa.uqueue.util.ScheduledTaskUtil;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.io.File;
@@ -100,67 +97,10 @@ public class UQueue extends Plugin {
 		ConfigValidationHelper.validateConfig(config, getLogger());
 
 		// Process queue.
-		getProxy().getScheduler().schedule(this, new Runnable() {
-			@Override
-			public void run() {
-				for (String server : queues.keySet()) {
-					List<UUID> queue = queues.get(server);
-					String queueSize = Integer.toString(queue.size());
-					String serverStatus = "";
-					if (!serverOnlineStatus.containsKey(server) || serverOnlineStatus.get(server)) {
-						serverStatus = "online";
-					} else {
-						long offlineFor = 0l;
-						if (serverStatusSince.containsKey(server)) {
-							offlineFor = System.currentTimeMillis() - serverStatusSince.get(server);
-						}
-						if (offlineFor > config.getInt("Queueing.RestartLength") * 1000L) {
-							serverStatus = "offline";
-						} else {
-							serverStatus = "restarting";
-						}
-					}
-					for (UUID player : queue) {
-						String position = Integer.toString(queue.indexOf(player) + 1);
-						switch (serverStatus) {
-							default:
-								getProxy().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(instance, "Notifications.QueuePosition", position, queueSize, server));
-								break;
-							case "offline":
-								getProxy().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(instance, "Notifications.ServerIsOffline", server, position, queueSize));
-								break;
-							case "restarting":
-								getProxy().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(instance, "Notifications.ServerIsRestarting", server, position, queueSize));
-								break;
-						}
-					}
-					// Still being pinged.
-					if (!serverOnlineStatus.containsKey(server)) continue;
-				}
-			}
-		}, 1, 1, TimeUnit.SECONDS);
+		getProxy().getScheduler().schedule(this, () -> ScheduledTaskUtil.processQueueNotifications(instance), 1, 1, TimeUnit.SECONDS);
 
 		// Ping servers to check if they're up.
-		getProxy().getScheduler().schedule(this, new Runnable() {
-			@Override
-			public void run() {
-				for (String server : queueableServers) {
-					getProxy().getServerInfo(server).ping(new Callback<ServerPing>() {
-						@Override
-						public void done(ServerPing serverPing, Throwable throwable) {
-							boolean status = serverPing != null;
-							boolean previousStatus = serverOnlineStatus.get(server);
-							serverOnlineStatus.put(server, status);
-							if (!serverStatusSince.containsKey(server)) {
-								serverStatusSince.put(server, System.currentTimeMillis());
-								return;
-							}
-							if (previousStatus != status) serverStatusSince.put(server, System.currentTimeMillis());
-						}
-					});
-				}
-			}
-		}, 1, 1, TimeUnit.SECONDS);
+		getProxy().getScheduler().schedule(this, () -> ScheduledTaskUtil.processServerPings(instance), 1, 1, TimeUnit.SECONDS);
 	}
 
 	public static UQueue getInstance() {
