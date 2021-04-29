@@ -27,8 +27,10 @@ public class UQueue extends Plugin {
 	private static UQueue instance;
 	private Config config;
 	private Config messages;
+
 	public static final int configVersion = 1;
 	public static final int messagesVersion = 1;
+
 	// Contains the server a player is currently queued for.
 	public HashMap<UUID, String> queuedFor;
 	// Contains the priority the player had when they queued for this server.
@@ -43,6 +45,8 @@ public class UQueue extends Plugin {
 	public HashMap<String, Long> serverStatusSince;
 	// Amount of times we've tried to connect the player.
 	public HashMap<UUID, Integer> connectionAttempts;
+	// Servers that have queueing disabled.
+	public List<String> disabledServers;
 
 	@Override
 	public void onEnable() {
@@ -55,7 +59,26 @@ public class UQueue extends Plugin {
 		queueableServers = new ArrayList<>();
 		serverStatusSince = new HashMap<>();
 		connectionAttempts = new HashMap<>();
+		disabledServers = new ArrayList<>();
 
+		initializeConfigs();
+
+		// Register commands.
+		getProxy().getPluginManager().registerCommand(this, new QueueCommand(this));
+		getProxy().getPluginManager().registerCommand(this, new UnqueueCommand(this));
+		getProxy().getPluginManager().registerCommand(this, new UQueueCommand(this));
+
+		// Register events.
+		getProxy().getPluginManager().registerListener(this, new PlayerListener(this));
+
+		// Process queue.
+		getProxy().getScheduler().schedule(this, () -> ScheduledTaskUtil.processQueueNotifications(instance), 1, 1, TimeUnit.SECONDS);
+
+		// Ping servers to check if they're up.
+		getProxy().getScheduler().schedule(this, () -> ScheduledTaskUtil.processServerPings(instance), 1, 1, TimeUnit.SECONDS);
+	}
+
+	private void initializeConfigs() {
 		// Initialize config.
 		config = LightningBuilder
 				.fromFile(new File(getDataFolder().getPath() + File.separator + "config.yml"))
@@ -74,13 +97,6 @@ public class UQueue extends Plugin {
 				.setConfigSettings(ConfigSettings.PRESERVE_COMMENTS)
 				.createConfig();
 
-		// Register commands.
-		getProxy().getPluginManager().registerCommand(this, new QueueCommand(this));
-		getProxy().getPluginManager().registerCommand(this, new UnqueueCommand(this));
-		getProxy().getPluginManager().registerCommand(this, new UQueueCommand(this));
-
-		// Register events.
-		getProxy().getPluginManager().registerListener(this, new PlayerListener(this));
 
 		// Update config if needed.
 		if (config.getInt("configVersion") != configVersion) {
@@ -98,12 +114,6 @@ public class UQueue extends Plugin {
 
 		// Verify config.
 		ConfigValidationHelper.validateConfig(config, getLogger());
-
-		// Process queue.
-		getProxy().getScheduler().schedule(this, () -> ScheduledTaskUtil.processQueueNotifications(instance), 1, 1, TimeUnit.SECONDS);
-
-		// Ping servers to check if they're up.
-		getProxy().getScheduler().schedule(this, () -> ScheduledTaskUtil.processServerPings(instance), 1, 1, TimeUnit.SECONDS);
 	}
 
 	public static UQueue getInstance() {

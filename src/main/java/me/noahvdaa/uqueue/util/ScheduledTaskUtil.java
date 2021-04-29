@@ -44,6 +44,9 @@ public class ScheduledTaskUtil {
 						break;
 				}
 			}
+			// Server is disabled.
+			if (plugin.disabledServers.contains(server))
+				continue;
 			// Server not online or no space.
 			if (!plugin.serverOnlineStatus.containsKey(server) || plugin.serverOnlineStatus.get(server) != ServerStatus.SPACE_AVAILABLE)
 				continue;

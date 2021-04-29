@@ -1,5 +1,9 @@
 package me.noahvdaa.uqueue.commands;
 
+import me.noahvdaa.uqueue.commands.uqueuecommand.HelpSubCommand;
+import me.noahvdaa.uqueue.commands.uqueuecommand.PauseSubCommand;
+import me.noahvdaa.uqueue.commands.uqueuecommand.ReloadSubCommand;
+import me.noahvdaa.uqueue.commands.uqueuecommand.UnPauseSubCommand;
 import me.noahvdaa.uqueue.config.ConfigValidationHelper;
 import me.noahvdaa.uqueue.UQueue;
 import me.noahvdaa.uqueue.util.ChatUtil;
@@ -23,16 +27,18 @@ public class UQueueCommand extends Command {
 		}
 		switch (subcommand) {
 			case "help":
-				sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&eAvailable subcommands:"));
-				sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&b/uqueue help &e- Show this list of commands."));
-				sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&b/uqueue reload &e- Reload the config file."));
+				HelpSubCommand.run(plugin, sender);
+				break;
+			case "unpause":
+			case "enable":
+				UnPauseSubCommand.run(plugin, sender, args);
 				break;
 			case "reload":
-				sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&6Reloading config file, please wait..."));
-				plugin.getConfig().forceReload();
-				// Verify config.
-				ConfigValidationHelper.validateConfig(plugin.getConfig(), plugin.getLogger());
-				sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&aReloaded config!"));
+				ReloadSubCommand.run(plugin, sender);
+				break;
+			case "pause":
+			case "disable":
+				PauseSubCommand.run(plugin, sender, args);
 				break;
 			case "":
 				sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&eThis server is running &buQueue v" + plugin.getDescription().getVersion() + " &eby &bNoahvdAa&e."));
