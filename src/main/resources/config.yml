@@ -23,8 +23,12 @@ Queueing:
   ServerListMode: blacklist
   ServerList:
     - blacklistedserver
-  # The amount of players to send to the server they're queued for.
+  # The amount of players to send to the server they're queued for, per second.
   PlayersPerSecond: 1
+  # The amount of seconds before a offline server is marked as "offline", rather than "restarting".
+  # Set to 0 to effectively disable
+  RestartLength: 30
+
 
 # DO NOT CHANGE THIS! THIS IS AUTOMATICALLY UPDATED BY THE PLUGIN
 configVersion: 1

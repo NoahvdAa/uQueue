@@ -13,10 +13,13 @@ import me.noahvdaa.uqueue.config.ConfigValidationHelper;
 import me.noahvdaa.uqueue.config.messages.MessagesUpdateHelper;
 import me.noahvdaa.uqueue.listener.PlayerListener;
 import me.noahvdaa.uqueue.util.ChatUtil;
+import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -35,6 +38,12 @@ public class UQueue extends Plugin {
 	public HashMap<UUID, Integer> queuePriority;
 	// Queues per server.
 	public HashMap<String, List<UUID>> queues;
+	// Server online status
+	public HashMap<String, Boolean> serverOnlineStatus;
+	// Servers that have been queued for since load. Used for pinging.
+	public List<String> queueableServers;
+	// How long have these servers had their current status?
+	public HashMap<String, Long> serverStatusSince;
 
 	@Override
 	public void onEnable() {
@@ -43,6 +52,9 @@ public class UQueue extends Plugin {
 		queuedFor = new HashMap<>();
 		queuePriority = new HashMap<>();
 		queues = new HashMap<>();
+		serverOnlineStatus = new HashMap<>();
+		queueableServers = new ArrayList<>();
+		serverStatusSince = new HashMap<>();
 
 		// Initialize config.
 		config = LightningBuilder
@@ -87,16 +99,65 @@ public class UQueue extends Plugin {
 		// Verify config.
 		ConfigValidationHelper.validateConfig(config, getLogger());
 
+		// Process queue.
 		getProxy().getScheduler().schedule(this, new Runnable() {
 			@Override
 			public void run() {
 				for (String server : queues.keySet()) {
 					List<UUID> queue = queues.get(server);
 					String queueSize = Integer.toString(queue.size());
+					String serverStatus = "";
+					if (!serverOnlineStatus.containsKey(server) || serverOnlineStatus.get(server)) {
+						serverStatus = "online";
+					} else {
+						long offlineFor = 0l;
+						if (serverStatusSince.containsKey(server)) {
+							offlineFor = System.currentTimeMillis() - serverStatusSince.get(server);
+						}
+						if (offlineFor > config.getInt("Queueing.RestartLength") * 1000L) {
+							serverStatus = "offline";
+						} else {
+							serverStatus = "restarting";
+						}
+					}
 					for (UUID player : queue) {
 						String position = Integer.toString(queue.indexOf(player) + 1);
-						getProxy().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(instance, "Notifications.QueuePosition", position, queueSize, server));
+						switch (serverStatus) {
+							case "online":
+								getProxy().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(instance, "Notifications.QueuePosition", position, queueSize, server));
+								break;
+							case "offline":
+								getProxy().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(instance, "Notifications.ServerIsOffline", server, position, queueSize));
+								break;
+							case "restarting":
+								getProxy().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(instance, "Notifications.ServerIsRestarting", server, position, queueSize));
+								break;
+						}
 					}
+					// Still being pinged.
+					if (!serverOnlineStatus.containsKey(server)) continue;
+				}
+			}
+		}, 1, 1, TimeUnit.SECONDS);
+
+		// Ping servers to check if they're up.
+		getProxy().getScheduler().schedule(this, new Runnable() {
+			@Override
+			public void run() {
+				for (String server : queueableServers) {
+					getProxy().getServerInfo(server).ping(new Callback<ServerPing>() {
+						@Override
+						public void done(ServerPing serverPing, Throwable throwable) {
+							boolean status = serverPing != null;
+							serverOnlineStatus.put(server, status);
+							if (!serverStatusSince.containsKey(server)) {
+								serverStatusSince.put(server, System.currentTimeMillis());
+								return;
+							}
+							boolean previousStatus = serverOnlineStatus.get(server);
+							if (previousStatus != status) serverStatusSince.put(server, System.currentTimeMillis());
+						}
+					});
 				}
 			}
 		}, 1, 1, TimeUnit.SECONDS);

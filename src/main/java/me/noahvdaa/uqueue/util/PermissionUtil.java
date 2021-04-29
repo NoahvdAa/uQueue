@@ -18,7 +18,7 @@ public class PermissionUtil {
 		int priority = 0;
 
 		for (String permission : getPermissions(p)) {
-			// It's not a uQueue priority permissino or the format isn't right.
+			// It's not a uQueue priority permission or the format isn't right.
 			if (!permission.toLowerCase().startsWith("uqueue.priority") || permission.split("\\.").length != 4)
 				continue;
 			String[] parts = permission.split("\\.");
@@ -57,7 +57,7 @@ public class PermissionUtil {
 
 			User lpuser = lpAPI.getUserManager().getUser(p.getUniqueId());
 
-			// Fetch all permissions with default context.
+			// Fetch all permissions with the current context.
 			SortedSet<Node> permissions = lpuser.resolveDistinctInheritedNodes(QueryOptions.contextual(lpuser.getQueryOptions().context()));
 			Collection<String> out = new ArrayList<String>();
 
@@ -73,7 +73,7 @@ public class PermissionUtil {
 
 		// TODO: Integrations for other permission plugins.
 
-		// Fallback.
+		// Fallback if permission plugin isn't officially supported, may not always work properly.
 		return p.getPermissions();
 	}
 
