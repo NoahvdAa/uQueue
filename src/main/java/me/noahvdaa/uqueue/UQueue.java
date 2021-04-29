@@ -46,6 +46,8 @@ public class UQueue extends Plugin {
 	public HashMap<String, Long> serverStatusSince;
 	// Amount of times we've tried to connect the player.
 	public HashMap<UUID, Integer> connectionAttempts;
+	// The amount of slots still available for a server.
+	public HashMap<String, Integer> slotsFree;
 	// Servers that have queueing disabled.
 	public List<String> disabledServers;
 
@@ -60,6 +62,7 @@ public class UQueue extends Plugin {
 		queueableServers = new ArrayList<>();
 		serverStatusSince = new HashMap<>();
 		connectionAttempts = new HashMap<>();
+		slotsFree = new HashMap<>();
 		disabledServers = new ArrayList<>();
 
 		initializeConfigs();

@@ -53,6 +53,7 @@ public class ScheduledTaskUtil {
 			ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(server);
 			for (int i = 0; i < queue.size() && i < PerServerConfigUtil.getInt(plugin, server, "PlayersPerSecond"); i++) {
 				UUID target = queue.get(i);
+				if (i >= plugin.slotsFree.get(server)) continue;
 				ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(target);
 
 				if (proxiedPlayer.getServer().getInfo().getName().equals(serverInfo.getName())) {
@@ -78,10 +79,21 @@ public class ScheduledTaskUtil {
 
 	public static void processServerPings(UQueue plugin) {
 		for (String server : plugin.queueableServers) {
+			if (PerServerConfigUtil.getBoolean(plugin, server, "NoPingIfQueueEmpty") && !plugin.queues.containsKey(server)) {
+				if (plugin.slotsFree.containsKey(server))
+					plugin.slotsFree.remove(server);
+				if (plugin.serverOnlineStatus.containsKey(server))
+					plugin.serverOnlineStatus.remove(server);
+				if (plugin.serverStatusSince.containsKey(server))
+					plugin.serverStatusSince.remove(server);
+				continue;
+			}
 			ProxyServer.getInstance().getServerInfo(server).ping((serverPing, throwable) -> {
 				ServerStatus status = ServerStatus.OFFLINE;
 				if (serverPing != null) {
-					status = serverPing.getPlayers().getOnline() >= serverPing.getPlayers().getMax() ? ServerStatus.FULL : ServerStatus.SPACE_AVAILABLE;
+					int slotsAvailable = serverPing.getPlayers().getMax() - serverPing.getPlayers().getOnline();
+					plugin.slotsFree.put(server, slotsAvailable);
+					status = slotsAvailable <= 0 ? ServerStatus.FULL : ServerStatus.SPACE_AVAILABLE;
 				}
 				ServerStatus previousStatus = plugin.serverOnlineStatus.get(server);
 				plugin.serverOnlineStatus.put(server, status);

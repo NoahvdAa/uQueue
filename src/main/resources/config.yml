@@ -35,6 +35,13 @@ Queueing:
   # Setting this too high may clog up your queue when someone isn't whitelisted, for example.
   # This value can be overridden per-server in servers.yml.
   MaxSendAttempts: 5
+  # When this settings is enabled, the plugin will not ping servers that have no players in the queue.
+  # This may prevent log-spam for server software not based on Spigot.
+  # Note: When this is enabled, the server has to be pinged first whenever a player joins the empty queue.
+  #       Because of this, the queue may take a second longer to "get started" when this is enabled.
+  #       This will also break the "RestartLength" setting.
+  # This value can be overridden per-server in servers.yml.
+  NoPingIfQueueEmpty: false
 
 # DO NOT CHANGE THIS! THIS IS AUTOMATICALLY UPDATED BY THE PLUGIN
 configVersion: 1

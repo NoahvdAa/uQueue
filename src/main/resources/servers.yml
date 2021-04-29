@@ -8,14 +8,17 @@
 #
 # By NoahvdAa
 #
-# This file contains per-server settings.
+# This file contains per-server settings. For explanation of what each settings does, go to the "Queueing" section
+# of config.yml. (global settings)
 # All values are optional.
 # Example server:
 # servername:
 #   PlayersPerSecond: 2
 #   RestartLength: 60
 #   MaxSendAttempts: 10
+#   NoPingIfQueueEmpty: false
 exampleserver:
   PlayersPerSecond: 2
   RestartLength: 60
   MaxSendAttempts: 10
+  NoPingIfQueueEmpty: false
