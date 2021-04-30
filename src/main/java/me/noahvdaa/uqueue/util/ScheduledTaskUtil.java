@@ -1,6 +1,5 @@
 package me.noahvdaa.uqueue.util;
 
-import me.noahvdaa.uqueue.ServerStatus;
 import me.noahvdaa.uqueue.UQueue;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.ProxyServer;
@@ -107,6 +106,18 @@ public class ScheduledTaskUtil {
 				}
 				if (!previousStatus.equals(status)) plugin.serverStatusSince.put(server, System.currentTimeMillis());
 			});
+		}
+	}
+
+	public static void processPluginMessages(UQueue plugin) {
+		for (ProxiedPlayer p : plugin.getProxy().getPlayers()) {
+			if (p.getServer() == null) continue;
+			boolean queued = plugin.queuedFor.containsKey(p.getUniqueId());
+			String server = queued ? plugin.queuedFor.get(p.getUniqueId()) : "";
+			int queuePosition = queued ? plugin.queues.get(server).indexOf(p.getUniqueId()) + 1 : 0;
+			int queueTotal = queued ? plugin.queues.get(server).size() : 0;
+
+			p.getServer().sendData("uqueue:queueupdate", PluginMessageUtil.toBytes(queued, server, queuePosition, queueTotal));
 		}
 	}
 

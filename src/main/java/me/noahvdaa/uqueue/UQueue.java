@@ -13,6 +13,7 @@ import me.noahvdaa.uqueue.config.ConfigValidationHelper;
 import me.noahvdaa.uqueue.config.messages.MessagesUpdateHelper;
 import me.noahvdaa.uqueue.listener.PlayerListener;
 import me.noahvdaa.uqueue.util.ScheduledTaskUtil;
+import me.noahvdaa.uqueue.util.ServerStatus;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.io.File;
@@ -72,11 +73,17 @@ public class UQueue extends Plugin {
 		getProxy().getPluginManager().registerCommand(this, new UnqueueCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new UQueueCommand(this));
 
+		// Register plugin message channel.
+		getProxy().registerChannel("uqueue:queueupdate");
+
 		// Register events.
 		getProxy().getPluginManager().registerListener(this, new PlayerListener(this));
 
 		// Process queue.
 		getProxy().getScheduler().schedule(this, () -> ScheduledTaskUtil.processQueueNotifications(instance), 1, 1, TimeUnit.SECONDS);
+
+		// Process plugin messages for placeholders.
+		getProxy().getScheduler().schedule(this, () -> ScheduledTaskUtil.processPluginMessages(instance), 1, 1, TimeUnit.SECONDS);
 
 		// Ping servers to check if they're up.
 		getProxy().getScheduler().schedule(this, () -> ScheduledTaskUtil.processServerPings(instance), 1, 1, TimeUnit.SECONDS);

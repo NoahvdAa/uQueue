@@ -1,5 +1,6 @@
 name: uQueue
-main: me.noahvdaa.uqueue.fallback.BukkitFallback
-version: "NO-BUKKIT"
+main: me.noahvdaa.uqueue.BukkitPlugin
+version: 1.0.0
 author: NoahvdAa
 api-version: 1.13
+softdepend: [ PlaceHolderAPI ]

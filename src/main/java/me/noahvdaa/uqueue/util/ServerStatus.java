@@ -1,4 +1,4 @@
-package me.noahvdaa.uqueue;
+package me.noahvdaa.uqueue.util;
 
 public enum ServerStatus {
 	SPACE_AVAILABLE,

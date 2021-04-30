@@ -2,4 +2,4 @@ name: uQueue
 main: me.noahvdaa.uqueue.UQueue
 version: 1.0.0
 author: NoahvdAa
-softdepends: [LuckPerms]
+softdepends: [ LuckPerms ]
