@@ -9,10 +9,10 @@ import java.io.IOException;
 
 public class PluginMessageUtil {
 	public static class PluginMessage {
-		boolean queued;
-		String server;
-		int queuePosition;
-		int queueLength;
+		public boolean queued;
+		public String server;
+		public int queuePosition;
+		public int queueLength;
 	}
 
 	public static PluginMessage parseBytes(byte[] bytes) {
