@@ -1,10 +1,7 @@
 package me.noahvdaa.uqueue.commands;
 
 import me.noahvdaa.uqueue.UQueue;
-import me.noahvdaa.uqueue.commands.uqueuecommand.HelpSubCommand;
-import me.noahvdaa.uqueue.commands.uqueuecommand.PauseSubCommand;
-import me.noahvdaa.uqueue.commands.uqueuecommand.ReloadSubCommand;
-import me.noahvdaa.uqueue.commands.uqueuecommand.UnPauseSubCommand;
+import me.noahvdaa.uqueue.commands.uqueuecommand.*;
 import me.noahvdaa.uqueue.util.ChatUtil;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
@@ -27,6 +24,9 @@ public class UQueueCommand extends Command {
 		switch (subcommand) {
 			case "help":
 				HelpSubCommand.run(plugin, sender);
+				break;
+			case "list":
+				ListSubCommand.run(plugin, sender, args);
 				break;
 			case "unpause":
 			case "enable":
