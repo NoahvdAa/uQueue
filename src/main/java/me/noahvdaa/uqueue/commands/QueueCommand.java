@@ -46,6 +46,12 @@ public class QueueCommand extends Command {
 			return;
 		}
 
+		if (p.hasPermission("uqueue.bypass." + server.getName())) {
+			sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.SendingYou", server.getName()));
+			p.connect(server);
+			return;
+		}
+
 		if (server.getName().equals(p.getServer().getInfo().getName())) {
 			sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.AlreadyHere"));
 			return;
