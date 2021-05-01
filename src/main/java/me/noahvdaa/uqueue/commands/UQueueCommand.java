@@ -78,6 +78,8 @@ public class UQueueCommand extends Command implements TabExecutor {
 					return plugin.getProxy().getServers().keySet().stream().filter(s -> !plugin.disabledServers.contains(s)).collect(Collectors.toList());
 				case "unpause":
 					return plugin.disabledServers;
+				default:
+					break;
 			}
 		}
 
