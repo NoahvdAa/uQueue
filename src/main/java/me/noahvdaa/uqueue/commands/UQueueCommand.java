@@ -5,8 +5,13 @@ import me.noahvdaa.uqueue.commands.uqueuecommand.*;
 import me.noahvdaa.uqueue.util.ChatUtil;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
+import net.md_5.bungee.api.plugin.TabExecutor;
 
-public class UQueueCommand extends Command {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class UQueueCommand extends Command implements TabExecutor {
 
 	private final UQueue plugin;
 
@@ -51,6 +56,32 @@ public class UQueueCommand extends Command {
 				sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&cUnknown subcommand. Type /uqueue help for help."));
 				break;
 		}
+	}
+
+	@Override
+	public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
+		List<String> suggestions = new ArrayList<>();
+
+		if (!sender.hasPermission("uqueue.admin")) return suggestions;
+
+		if (args.length == 1) {
+			suggestions.add("help");
+			suggestions.add("list");
+			suggestions.add("pause");
+			suggestions.add("reload");
+			suggestions.add("unpause");
+		} else if (args.length == 2) {
+			switch (args[0].toLowerCase()) {
+				case "list":
+					return plugin.getProxy().getServers().keySet();
+				case "pause":
+					return plugin.getProxy().getServers().keySet().stream().filter(s -> !plugin.disabledServers.contains(s)).collect(Collectors.toList());
+				case "unpause":
+					return plugin.disabledServers;
+			}
+		}
+
+		return suggestions;
 	}
 
 }
