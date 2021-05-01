@@ -16,7 +16,9 @@ public class ScheduledTaskUtil {
 			List<UUID> queue = plugin.queues.get(server);
 			String queueSize = Integer.toString(queue.size());
 			String serverStatus;
-			if (!plugin.serverOnlineStatus.containsKey(server) || plugin.serverOnlineStatus.get(server) != ServerStatus.OFFLINE) {
+			if (!plugin.serverOnlineStatus.containsKey(server)) {
+				serverStatus = "online";
+			} else if (plugin.serverOnlineStatus.get(server) != ServerStatus.OFFLINE) {
 				if (plugin.serverOnlineStatus.get(server) == ServerStatus.SPACE_AVAILABLE) {
 					serverStatus = "online";
 				} else {
