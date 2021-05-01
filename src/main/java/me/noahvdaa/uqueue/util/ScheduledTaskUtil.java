@@ -39,16 +39,16 @@ public class ScheduledTaskUtil {
 				String position = Integer.toString(queue.indexOf(player) + 1);
 				switch (serverStatus) {
 					default:
-						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(plugin, "Notifications.QueuePosition", position, queueSize, server));
+						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(plugin, "Notifications.QueuePosition", position, queueSize, PerServerConfigUtil.getServerDisplayName(plugin, server)));
 						break;
 					case "full":
-						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(plugin, "Notifications.ServerIsFull", server, position, queueSize));
+						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(plugin, "Notifications.ServerIsFull", PerServerConfigUtil.getServerDisplayName(plugin, server), position, queueSize));
 						break;
 					case "offline":
-						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(plugin, "Notifications.ServerIsOffline", server, position, queueSize));
+						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(plugin, "Notifications.ServerIsOffline", PerServerConfigUtil.getServerDisplayName(plugin, server), position, queueSize));
 						break;
 					case "restarting":
-						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(plugin, "Notifications.ServerIsRestarting", server, position, queueSize));
+						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(plugin, "Notifications.ServerIsRestarting", PerServerConfigUtil.getServerDisplayName(plugin, server), position, queueSize));
 						break;
 				}
 			}
@@ -74,12 +74,12 @@ public class ScheduledTaskUtil {
 
 				plugin.connectionAttempts.put(target, plugin.connectionAttempts.get(target) + 1);
 
-				proxiedPlayer.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.SendingYou", server));
+				proxiedPlayer.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.SendingYou", PerServerConfigUtil.getServerDisplayName(plugin, server)));
 				proxiedPlayer.connect(serverInfo);
 
 				if (plugin.connectionAttempts.get(target) > PerServerConfigUtil.getInt(plugin, server, "MaxSendAttempts")) {
 					QueueUtil.removeFromQueue(plugin, target);
-					proxiedPlayer.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.ReachedMaxAttempts", server));
+					proxiedPlayer.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.ReachedMaxAttempts", PerServerConfigUtil.getServerDisplayName(plugin, server)));
 				}
 			}
 		}

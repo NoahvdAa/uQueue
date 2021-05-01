@@ -2,6 +2,7 @@ package me.noahvdaa.uqueue.commands;
 
 import me.noahvdaa.uqueue.UQueue;
 import me.noahvdaa.uqueue.util.ChatUtil;
+import me.noahvdaa.uqueue.util.PerServerConfigUtil;
 import me.noahvdaa.uqueue.util.QueueUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.CommandSender;
@@ -34,7 +35,7 @@ public class UnqueueCommand extends Command {
 		String queuedFor = plugin.queuedFor.get(p.getUniqueId());
 
 		QueueUtil.removeFromQueue(plugin, p.getUniqueId());
-		sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.LeftQueueFor", queuedFor));
+		sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.LeftQueueFor", PerServerConfigUtil.getServerDisplayName(plugin, queuedFor)));
 		// Clear queue position message.
 		p.sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(""));
 	}

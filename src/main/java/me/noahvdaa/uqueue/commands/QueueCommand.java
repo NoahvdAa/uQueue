@@ -2,6 +2,7 @@ package me.noahvdaa.uqueue.commands;
 
 import me.noahvdaa.uqueue.UQueue;
 import me.noahvdaa.uqueue.util.ChatUtil;
+import me.noahvdaa.uqueue.util.PerServerConfigUtil;
 import me.noahvdaa.uqueue.util.PermissionUtil;
 import me.noahvdaa.uqueue.util.QueueUtil;
 import net.md_5.bungee.api.CommandSender;
@@ -47,7 +48,7 @@ public class QueueCommand extends Command {
 		}
 
 		if (p.hasPermission("uqueue.bypass." + server.getName())) {
-			sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.SendingYou", server.getName()));
+			sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.SendingYou", PerServerConfigUtil.getServerDisplayName(plugin, server.getName())));
 			p.connect(server);
 			return;
 		}
@@ -64,11 +65,11 @@ public class QueueCommand extends Command {
 				return;
 			}
 			QueueUtil.removeFromQueue(plugin, p.getUniqueId());
-			sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.LeftQueueFor", queuedFor));
+			sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.LeftQueueFor", PerServerConfigUtil.getServerDisplayName(plugin, queuedFor)));
 		}
 
 		QueueUtil.insertIntoQueue(plugin, server.getName(), p.getUniqueId(), PermissionUtil.getQueuePriority(p, server.getName()));
-		sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.NowQueuedFor", server.getName()));
+		sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.NowQueuedFor", PerServerConfigUtil.getServerDisplayName(plugin, server.getName())));
 	}
 
 }
