@@ -33,6 +33,13 @@ public class PermissionUtil {
 		return priority;
 	}
 
+	public static String getPermissionProvider() {
+		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
+			return "LuckPerms";
+		}
+		return "other";
+	}
+
 	public static boolean mayQueueForServer(UQueue plugin, ProxiedPlayer p, String server) {
 		String serverListMode = plugin.getConfig().getString("Queueing.ServerListMode");
 		// We can use if/else here, because the config validator ensures that the setting
@@ -51,8 +58,9 @@ public class PermissionUtil {
 	}
 
 	public static Collection<String> getPermissions(ProxiedPlayer p) {
-		// Is LuckPerms loaded?
-		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
+		String permissionProvider = getPermissionProvider();
+
+		if (permissionProvider.equals("LuckPerms")) {
 			LuckPerms lpAPI = LuckPermsProvider.get();
 
 			User lpuser = lpAPI.getUserManager().getUser(p.getUniqueId());

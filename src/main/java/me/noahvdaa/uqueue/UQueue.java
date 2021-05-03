@@ -12,9 +12,12 @@ import me.noahvdaa.uqueue.config.ConfigUpdateHelper;
 import me.noahvdaa.uqueue.config.ConfigValidationHelper;
 import me.noahvdaa.uqueue.config.messages.MessagesUpdateHelper;
 import me.noahvdaa.uqueue.listener.PlayerListener;
+import me.noahvdaa.uqueue.util.PermissionUtil;
 import me.noahvdaa.uqueue.util.ScheduledTaskUtil;
 import me.noahvdaa.uqueue.util.ServerStatus;
 import net.md_5.bungee.api.plugin.Plugin;
+import org.bstats.bungeecord.Metrics;
+import org.bstats.charts.SimplePie;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -87,6 +90,10 @@ public class UQueue extends Plugin {
 
 		// Ping servers to check if they're up.
 		getProxy().getScheduler().schedule(this, () -> ScheduledTaskUtil.processServerPings(instance), 1, 1, TimeUnit.SECONDS);
+
+		// Register bStats metrics.
+		Metrics bStats = new Metrics(this, 11230);
+		bStats.addCustomChart(new SimplePie("permission_system", () -> PermissionUtil.getPermissionProvider()));
 	}
 
 	private void initializeConfigs() {
