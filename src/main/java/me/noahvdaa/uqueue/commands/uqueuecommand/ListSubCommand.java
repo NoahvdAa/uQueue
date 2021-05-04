@@ -15,23 +15,23 @@ public class ListSubCommand {
 
 	public static void run(UQueue plugin, CommandSender sender, String[] args) {
 		if (args.length != 2) {
-			sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&cUsage: /uqueue list <server>"));
+			sender.sendMessage(ChatUtil.colorizeAsPrefixedComponent(plugin, "&cUsage: /uqueue list <server>"));
 			return;
 		}
 		String server = args[1];
 		ServerInfo info = ProxyServer.getInstance().getServerInfo(server);
 		if (info == null) {
-			sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&cThat server doesn't exist!"));
+			sender.sendMessage(ChatUtil.colorizeAsPrefixedComponent(plugin, "&cThat server doesn't exist!"));
 			return;
 		}
 
-		BaseComponent message = ChatUtil.colorizeIntoPrefixedComponent(plugin, "&ePeople queued for &b" + info.getName() + "&e (" + (plugin.queues.containsKey(info.getName()) ? plugin.queues.get(info.getName()).size() : 0) + "): &f");
+		BaseComponent message = ChatUtil.colorizeAsPrefixedComponent(plugin, "&ePeople queued for &b" + info.getName() + "&e (" + (plugin.queues.containsKey(info.getName()) ? plugin.queues.get(info.getName()).size() : 0) + "): &f");
 
 		if (plugin.queues.containsKey(info.getName())) {
 			int i = 0;
 			for (UUID p : plugin.queues.get(info.getName())) {
 				if (i != 0) message.addExtra(", ");
-				BaseComponent component = ChatUtil.colorizeIntoComponent(plugin.getProxy().getPlayer(p).getName());
+				BaseComponent component = ChatUtil.colorizeAsComponent(plugin.getProxy().getPlayer(p).getName());
 				component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Priority: " + plugin.queuePriority.get(p))));
 				message.addExtra(component);
 				i++;

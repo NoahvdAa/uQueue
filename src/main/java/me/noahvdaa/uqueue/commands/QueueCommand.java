@@ -27,13 +27,13 @@ public class QueueCommand extends Command implements TabExecutor {
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		if (!(sender instanceof ProxiedPlayer)) {
-			sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&cThis command can only be used by players."));
+			sender.sendMessage(ChatUtil.colorizeAsPrefixedComponent(plugin, "&cThis command can only be used by players."));
 			return;
 		}
 		ProxiedPlayer p = (ProxiedPlayer) sender;
 
 		if (args.length != 1) {
-			sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&cUsage: /queue <server>"));
+			sender.sendMessage(ChatUtil.colorizeAsPrefixedComponent(plugin, "&cUsage: /queue <server>"));
 			return;
 		}
 

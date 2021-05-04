@@ -8,13 +8,13 @@ import net.md_5.bungee.api.CommandSender;
 public class ReloadSubCommand {
 
 	public static void run(UQueue plugin, CommandSender sender) {
-		sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&6Reloading config file, please wait..."));
+		sender.sendMessage(ChatUtil.colorizeAsPrefixedComponent(plugin, "&6Reloading config file, please wait..."));
 		plugin.getConfig().forceReload();
 		// Verify config.
 		ConfigValidationHelper.validateConfig(plugin.getConfig(), plugin.getLogger());
 		plugin.getMessages().forceReload();
 		plugin.getPerServerConfig().forceReload();
-		sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&aReloaded config!"));
+		sender.sendMessage(ChatUtil.colorizeAsPrefixedComponent(plugin, "&aReloaded config!"));
 	}
 
 }

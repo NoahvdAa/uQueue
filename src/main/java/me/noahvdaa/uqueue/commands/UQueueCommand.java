@@ -45,15 +45,15 @@ public class UQueueCommand extends Command implements TabExecutor {
 				PauseSubCommand.run(plugin, sender, args);
 				break;
 			case "":
-				sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&eThis server is running &buQueue v" + plugin.getDescription().getVersion() + " &eby &bNoahvdAa&e."));
+				sender.sendMessage(ChatUtil.colorizeAsPrefixedComponent(plugin, "&eThis server is running &buQueue v" + plugin.getDescription().getVersion() + " &eby &bNoahvdAa&e."));
 				if (!sender.hasPermission("uqueue.admin")) {
 					sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.uQueue.NoPermissions"));
 				} else {
-					sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&eType &b/uqueue help &efor a list of commands."));
+					sender.sendMessage(ChatUtil.colorizeAsPrefixedComponent(plugin, "&eType &b/uqueue help &efor a list of commands."));
 				}
 				break;
 			default:
-				sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&cUnknown subcommand. Type /uqueue help for help."));
+				sender.sendMessage(ChatUtil.colorizeAsPrefixedComponent(plugin, "&cUnknown subcommand. Type /uqueue help for help."));
 				break;
 		}
 	}

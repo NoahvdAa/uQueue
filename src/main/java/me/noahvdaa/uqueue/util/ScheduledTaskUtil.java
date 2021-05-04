@@ -40,16 +40,16 @@ public class ScheduledTaskUtil {
 				String position = Integer.toString(queue.indexOf(player) + 1);
 				switch (serverStatus) {
 					default:
-						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(plugin, "Notifications.QueuePosition", position, queueSize, PerServerConfigUtil.getServerDisplayName(plugin, server)));
+						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigMessageAsComponent(plugin, "Notifications.QueuePosition", position, queueSize, PerServerConfigUtil.getServerDisplayName(plugin, server)));
 						break;
 					case "full":
-						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(plugin, "Notifications.ServerIsFull", PerServerConfigUtil.getServerDisplayName(plugin, server), position, queueSize));
+						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigMessageAsComponent(plugin, "Notifications.ServerIsFull", PerServerConfigUtil.getServerDisplayName(plugin, server), position, queueSize));
 						break;
 					case "offline":
-						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(plugin, "Notifications.ServerIsOffline", PerServerConfigUtil.getServerDisplayName(plugin, server), position, queueSize));
+						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigMessageAsComponent(plugin, "Notifications.ServerIsOffline", PerServerConfigUtil.getServerDisplayName(plugin, server), position, queueSize));
 						break;
 					case "restarting":
-						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigPlaceholderMessageWithoutPrefixAsComponent(plugin, "Notifications.ServerIsRestarting", PerServerConfigUtil.getServerDisplayName(plugin, server), position, queueSize));
+						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigMessageAsComponent(plugin, "Notifications.ServerIsRestarting", PerServerConfigUtil.getServerDisplayName(plugin, server), position, queueSize));
 						break;
 				}
 			}

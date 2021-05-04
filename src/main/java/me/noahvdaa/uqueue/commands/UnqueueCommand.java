@@ -22,7 +22,7 @@ public class UnqueueCommand extends Command {
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		if (!(sender instanceof ProxiedPlayer)) {
-			sender.sendMessage(ChatUtil.colorizeIntoPrefixedComponent(plugin, "&cThis command can only be used by players."));
+			sender.sendMessage(ChatUtil.colorizeAsPrefixedComponent(plugin, "&cThis command can only be used by players."));
 			return;
 		}
 		ProxiedPlayer p = (ProxiedPlayer) sender;
