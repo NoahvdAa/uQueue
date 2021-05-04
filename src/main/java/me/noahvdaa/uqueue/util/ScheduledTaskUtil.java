@@ -69,7 +69,13 @@ public class ScheduledTaskUtil {
 					if (plugin.slotsFree.get(queueServer) < 1) {
 						plugin.serverOnlineStatus.put(queueServer, ServerStatus.FULL);
 					}
+					// Do not send to both servers in the same second.
+					continue;
 				}
+
+				// Wait for them to connect to queue server first.
+				if (!queueServer.equals("") && !proxiedPlayer.getServer().getInfo().getName().equals(queueServer) && plugin.serverOnlineStatus.containsKey(queueServer) && plugin.serverOnlineStatus.get(queueServer) == ServerStatus.SPACE_AVAILABLE)
+					continue;
 
 				if (dontSend) continue;
 
