@@ -54,8 +54,8 @@ Queueing:
 # Set to an empty string to disable.
 # The "OTHER" is used when an IP isn't on this list.
 # Players still need queue permissions to be able to queue for a forced host.
-# When adding a forced host here, it should be removed from bungeecord.yml
-# WARNING: This value can be spoofed by the client!
+# IMPORTANT: When adding a forced host here, it should be removed from bungeecord.yml.
+# WARNING: The host used to connect can be spoofed by the client!
 # Due to YAML limitations, underscores (_) are used instead of dots! test.noahvdaa.me will become test_noahvdaa_me!
 ForcedHosts:
   example_noahvdaa_me: "skyblock"
