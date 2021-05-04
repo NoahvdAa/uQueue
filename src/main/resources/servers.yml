@@ -18,9 +18,11 @@
 #   MaxSendAttempts: 10
 #   NoPingIfQueueEmpty: false
 #   DisplayAs: "Server Name"
+#   QueueServer: "limbo"
 exampleserver:
   PlayersPerSecond: 2
   RestartLength: 60
   MaxSendAttempts: 10
   NoPingIfQueueEmpty: false
   DisplayAs: "Example Server"
+  QueueServer: "limbo"

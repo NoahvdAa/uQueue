@@ -7,6 +7,7 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.List;
+import java.util.ListIterator;
 import java.util.UUID;
 
 public class ScheduledTaskUtil {
@@ -52,17 +53,27 @@ public class ScheduledTaskUtil {
 						break;
 				}
 			}
-			// Server is disabled.
-			if (plugin.disabledServers.contains(server))
-				continue;
-			// Server not online or no space.
-			if (!plugin.serverOnlineStatus.containsKey(server) || plugin.serverOnlineStatus.get(server) != ServerStatus.SPACE_AVAILABLE)
-				continue;
+
+			boolean dontSend = plugin.disabledServers.contains(server) || !plugin.serverOnlineStatus.containsKey(server) || plugin.serverOnlineStatus.get(server) != ServerStatus.SPACE_AVAILABLE;
+
 			ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(server);
 			for (int i = 0; i < queue.size() && i < PerServerConfigUtil.getInt(plugin, server, "PlayersPerSecond"); i++) {
 				UUID target = queue.get(i);
-				if (i >= plugin.slotsFree.get(server)) continue;
 				ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(target);
+
+				String queueServer = PerServerConfigUtil.getString(plugin, server, "QueueServer");
+
+				if (!queueServer.equals("") && plugin.serverOnlineStatus.containsKey(queueServer) && plugin.serverOnlineStatus.get(queueServer) == ServerStatus.SPACE_AVAILABLE) {
+					plugin.slotsFree.put(queueServer, plugin.slotsFree.get(queueServer) - 1);
+					proxiedPlayer.connect(ProxyServer.getInstance().getServerInfo(queueServer));
+					if (plugin.slotsFree.get(queueServer) < 1) {
+						plugin.serverOnlineStatus.put(queueServer, ServerStatus.FULL);
+					}
+				}
+
+				if (dontSend) continue;
+
+				if (i >= plugin.slotsFree.get(server)) continue;
 
 				if (proxiedPlayer.getServer().getInfo().getName().equals(serverInfo.getName())) {
 					QueueUtil.removeFromQueue(plugin, target);
@@ -86,13 +97,28 @@ public class ScheduledTaskUtil {
 	}
 
 	public static void processServerPings(UQueue plugin) {
-		for (String server : plugin.queueableServers) {
-			if (PerServerConfigUtil.getBoolean(plugin, server, "NoPingIfQueueEmpty") && !plugin.queues.containsKey(server)) {
+		ListIterator<String> serversToPing = plugin.queueableServers.listIterator();
+
+		while (serversToPing.hasNext()) {
+			String server = serversToPing.next();
+
+			if (!plugin.queueServers.contains(server) && PerServerConfigUtil.getBoolean(plugin, server, "NoPingIfQueueEmpty") && !plugin.queues.containsKey(server)) {
 				plugin.slotsFree.remove(server);
 				plugin.serverOnlineStatus.remove(server);
 				plugin.serverStatusSince.remove(server);
 				continue;
 			}
+
+			String queueServer = PerServerConfigUtil.getString(plugin, server, "QueueServer");
+
+			if (!queueServer.equals("")) {
+				ServerInfo serverInfo = plugin.getProxy().getServerInfo(queueServer);
+				if (serverInfo != null && !plugin.queueServers.contains(serverInfo.getName())) {
+					plugin.queueServers.add(queueServer);
+					serversToPing.add(queueServer);
+				}
+			}
+
 			ProxyServer.getInstance().getServerInfo(server).ping((serverPing, throwable) -> {
 				ServerStatus status = ServerStatus.OFFLINE;
 				if (serverPing != null) {

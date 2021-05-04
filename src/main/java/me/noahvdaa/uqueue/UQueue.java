@@ -54,11 +54,15 @@ public class UQueue extends Plugin {
 	public HashMap<String, Integer> slotsFree;
 	// Servers that have queueing disabled.
 	public List<String> disabledServers;
+	// Servers that are used to "park" players in while being queued and have been used at least once.
+	public List<String> queueServers;
 
 	@Override
 	public void onEnable() {
+		// Store instance for singleton.
 		instance = this;
 
+		// TODO: Reduce amount of hashmaps.
 		queuedFor = new HashMap<>();
 		queuePriority = new HashMap<>();
 		queues = new HashMap<>();
@@ -68,6 +72,7 @@ public class UQueue extends Plugin {
 		connectionAttempts = new HashMap<>();
 		slotsFree = new HashMap<>();
 		disabledServers = new ArrayList<>();
+		queueServers = new ArrayList<>();
 
 		initializeConfigs();
 

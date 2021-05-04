@@ -18,6 +18,13 @@ public class PerServerConfigUtil {
 		return plugin.getPerServerConfig().getBoolean(serverName + "." + key);
 	}
 
+	public static String getString(UQueue plugin, String serverName, String key) {
+		if (!plugin.getPerServerConfig().contains(serverName) || !plugin.getPerServerConfig().contains(serverName + "." + key)) {
+			return plugin.getConfig().getString("Queueing." + key);
+		}
+		return plugin.getPerServerConfig().getString(serverName + "." + key);
+	}
+
 	public static String getServerDisplayName(UQueue plugin, String serverName) {
 		if (!plugin.getPerServerConfig().contains(serverName) || !plugin.getPerServerConfig().contains(serverName + ".DisplayAs")) {
 			return serverName;
