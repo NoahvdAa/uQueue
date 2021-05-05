@@ -152,7 +152,7 @@ public class UQueueableServer implements QueueableServer {
 		// Find queue position to insert into.
 		int pos = 0;
 		for (UUID queuedPlayer : queue) {
-			if (priorities.get(uuid) < priority) break;
+			if (priorities.get(queuedPlayer) < priority) break;
 			pos++;
 		}
 

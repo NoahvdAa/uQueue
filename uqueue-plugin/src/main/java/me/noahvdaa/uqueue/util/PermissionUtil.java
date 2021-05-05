@@ -1,6 +1,5 @@
 package me.noahvdaa.uqueue.util;
 
-import me.noahvdaa.uqueue.UQueue;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
@@ -10,7 +9,9 @@ import net.luckperms.api.query.QueryOptions;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.SortedSet;
 
 public class PermissionUtil {
 
