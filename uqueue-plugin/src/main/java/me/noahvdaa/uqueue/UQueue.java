@@ -5,16 +5,22 @@ import de.leonhard.storage.LightningBuilder;
 import de.leonhard.storage.internal.settings.ConfigSettings;
 import de.leonhard.storage.internal.settings.DataType;
 import de.leonhard.storage.internal.settings.ReloadSettings;
+import me.noahvdaa.uqueue.api.UQueuePlugin;
+import me.noahvdaa.uqueue.api.util.QueueablePlayer;
+import me.noahvdaa.uqueue.api.util.QueueableServer;
 import me.noahvdaa.uqueue.commands.QueueCommand;
 import me.noahvdaa.uqueue.commands.UQueueCommand;
 import me.noahvdaa.uqueue.commands.UnqueueCommand;
 import me.noahvdaa.uqueue.config.ConfigUpdateHelper;
 import me.noahvdaa.uqueue.config.ConfigValidationHelper;
 import me.noahvdaa.uqueue.config.messages.MessagesUpdateHelper;
+import me.noahvdaa.uqueue.impl.UQueueablePlayer;
+import me.noahvdaa.uqueue.impl.UQueueableServer;
 import me.noahvdaa.uqueue.listener.PlayerListener;
 import me.noahvdaa.uqueue.util.PermissionUtil;
 import me.noahvdaa.uqueue.util.ScheduledTaskUtil;
-import me.noahvdaa.uqueue.util.ServerStatus;
+import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import org.bstats.bungeecord.Metrics;
 import org.bstats.charts.SimplePie;
@@ -26,7 +32,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class UQueue extends Plugin {
+public class UQueue extends Plugin implements UQueuePlugin {
 
 	private static UQueue instance;
 	private Config config;
@@ -36,43 +42,18 @@ public class UQueue extends Plugin {
 	public static final int configVersion = 1;
 	public static final int messagesVersion = 1;
 
-	// Contains the server a player is currently queued for.
-	public HashMap<UUID, String> queuedFor;
-	// Contains the priority the player had when they queued for this server.
-	public HashMap<UUID, Integer> queuePriority;
-	// Queues per server.
-	public HashMap<String, List<UUID>> queues;
-	// Server online status
-	public HashMap<String, ServerStatus> serverOnlineStatus;
-	// Servers that have been queued for since load. Used for pinging.
-	public List<String> queueableServers;
-	// How long have these servers had their current status?
-	public HashMap<String, Long> serverStatusSince;
-	// Amount of times we've tried to connect the player.
-	public HashMap<UUID, Integer> connectionAttempts;
-	// The amount of slots still available for a server.
-	public HashMap<String, Integer> slotsFree;
-	// Servers that have queueing disabled.
+	public HashMap<String, QueueableServer> queueableServers;
+	public HashMap<UUID, QueueablePlayer> queueablePlayers;
 	public List<String> disabledServers;
-	// Servers that are used to "park" players in while being queued and have been used at least once.
-	public List<String> queueServers;
 
 	@Override
 	public void onEnable() {
 		// Store instance for singleton.
 		instance = this;
 
-		// TODO: Reduce amount of hashmaps.
-		queuedFor = new HashMap<>();
-		queuePriority = new HashMap<>();
-		queues = new HashMap<>();
-		serverOnlineStatus = new HashMap<>();
-		queueableServers = new ArrayList<>();
-		serverStatusSince = new HashMap<>();
-		connectionAttempts = new HashMap<>();
-		slotsFree = new HashMap<>();
+		queueableServers = new HashMap<>();
+		queueablePlayers = new HashMap<>();
 		disabledServers = new ArrayList<>();
-		queueServers = new ArrayList<>();
 
 		initializeConfigs();
 
@@ -163,4 +144,28 @@ public class UQueue extends Plugin {
 		return this.perServerConfig;
 	}
 
+	@Override
+	public QueueablePlayer getPlayer(ProxiedPlayer player) {
+		UUID uuid = player.getUniqueId();
+		if (queueablePlayers.containsKey(uuid))
+			return queueablePlayers.get(uuid);
+		QueueablePlayer newPlayer = new UQueueablePlayer(player);
+		queueablePlayers.put(uuid, newPlayer);
+		return newPlayer;
+	}
+
+	public void removePlayer(ProxiedPlayer player) {
+		UUID uuid = player.getUniqueId();
+		queueablePlayers.remove(uuid);
+	}
+
+	@Override
+	public QueueableServer getServer(ServerInfo info) {
+		String name = info.getName();
+		if (queueableServers.containsKey(name))
+			return queueableServers.get(name);
+		QueueableServer newServer = new UQueueableServer(name);
+		queueableServers.put(name, newServer);
+		return newServer;
+	}
 }

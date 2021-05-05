@@ -1,10 +1,10 @@
 package me.noahvdaa.uqueue.listener;
 
 import me.noahvdaa.uqueue.UQueue;
+import me.noahvdaa.uqueue.api.util.QueueablePlayer;
+import me.noahvdaa.uqueue.api.util.QueueableServer;
 import me.noahvdaa.uqueue.util.ChatUtil;
 import me.noahvdaa.uqueue.util.PerServerConfigUtil;
-import me.noahvdaa.uqueue.util.PermissionUtil;
-import me.noahvdaa.uqueue.util.QueueUtil;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -14,8 +14,6 @@ import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-
-import java.util.UUID;
 
 public class PlayerListener implements Listener {
 
@@ -27,14 +25,16 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerDisconnect(PlayerDisconnectEvent e) {
-		UUID player = e.getPlayer().getUniqueId();
-		if (!plugin.queuedFor.containsKey(player)) return;
-		QueueUtil.removeFromQueue(plugin, player);
+		QueueablePlayer queueablePlayer = plugin.getPlayer(e.getPlayer());
+		if (queueablePlayer.isQueued()) queueablePlayer.getQueuedServer().removeFromQueue(queueablePlayer);
+		plugin.removePlayer(e.getPlayer());
 	}
 
 	@EventHandler
 	public void onPostLogin(PostLoginEvent e) {
 		ProxiedPlayer p = e.getPlayer();
+		QueueablePlayer queueablePlayer = plugin.getPlayer(e.getPlayer());
+
 		String vHost = p.getPendingConnection().getVirtualHost().getHostString().toLowerCase().replace('.', '_');
 		String forcedHost = plugin.getConfig().getString("ForcedHosts.OTHER");
 
@@ -43,10 +43,13 @@ public class PlayerListener implements Listener {
 		}
 
 		if (forcedHost.equals("")) return;
-		if (!PermissionUtil.mayQueueForServer(plugin, p, forcedHost)) return;
 
 		ServerInfo server = ProxyServer.getInstance().getServerInfo(forcedHost);
 		if (server == null) return;
+
+		QueueableServer queueableServer = plugin.getServer(server);
+
+		if (!queueableServer.mayQueue(queueablePlayer)) return;
 
 		if (p.hasPermission("uqueue.bypass." + server.getName())) {
 			p.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.SendingYou", PerServerConfigUtil.getServerDisplayName(plugin, server.getName())));
@@ -54,16 +57,17 @@ public class PlayerListener implements Listener {
 			return;
 		}
 
-		QueueUtil.insertIntoQueue(plugin, server.getName(), p.getUniqueId(), PermissionUtil.getQueuePriority(p, server.getName()));
+		queueableServer.addToQueue(queueablePlayer);
+		queueablePlayer.setConnectionAttempts(0);
 		p.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.NowQueuedFor", PerServerConfigUtil.getServerDisplayName(plugin, server.getName())));
 	}
 
 	@EventHandler
 	public void onServerConnected(ServerConnectedEvent e) {
-		UUID player = e.getPlayer().getUniqueId();
-		if (!plugin.queuedFor.containsKey(player) || !plugin.queuedFor.get(player).equals(e.getServer().getInfo().getName()))
+		QueueablePlayer queueablePlayer = plugin.getPlayer(e.getPlayer());
+		if (!queueablePlayer.isQueued() || !queueablePlayer.getQueuedServer().getName().equals(e.getServer().getInfo().getName()))
 			return;
-		QueueUtil.removeFromQueue(plugin, player);
+		queueablePlayer.getQueuedServer().removeFromQueue(queueablePlayer);
 	}
 
 	@EventHandler

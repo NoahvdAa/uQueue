@@ -1,144 +1,150 @@
 package me.noahvdaa.uqueue.util;
 
 import me.noahvdaa.uqueue.UQueue;
+import me.noahvdaa.uqueue.api.util.QueueablePlayer;
+import me.noahvdaa.uqueue.api.util.QueueableServer;
+import me.noahvdaa.uqueue.api.util.ServerStatus;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.UUID;
 
 public class ScheduledTaskUtil {
 
 	public static void processQueueNotifications(UQueue plugin) {
-		for (String server : plugin.queues.keySet()) {
-			List<UUID> queue = plugin.queues.get(server);
+		for (QueueableServer server : plugin.queueableServers.values()) {
+			List<UUID> queue = server.getQueuedPlayers();
+
 			String queueSize = Integer.toString(queue.size());
 			String serverStatus;
-			if (!plugin.serverOnlineStatus.containsKey(server)) {
+
+			if (server.getStatus() == null) {
+				// Not pinged yet.
 				serverStatus = "online";
-			} else if (plugin.serverOnlineStatus.get(server) != ServerStatus.OFFLINE) {
-				if (plugin.serverOnlineStatus.get(server) == ServerStatus.SPACE_AVAILABLE) {
-					serverStatus = "online";
-				} else {
+			} else if (server.getStatus() != ServerStatus.OFFLINE) {
+				// Is it full?
+				if (server.getStatus() == ServerStatus.FULL) {
 					serverStatus = "full";
+				} else {
+					serverStatus = "online";
 				}
 			} else {
-				long offlineFor = 0L;
-				if (plugin.serverStatusSince.containsKey(server)) {
-					offlineFor = System.currentTimeMillis() - plugin.serverStatusSince.get(server);
-				}
-				if (offlineFor > PerServerConfigUtil.getInt(plugin, server, "RestartLength") * 1000L) {
+				long offlineFor = server.getStatusLastUpdated();
+
+				if (offlineFor > PerServerConfigUtil.getInt(plugin, server.getName(), "RestartLength") * 1000L) {
 					serverStatus = "offline";
 				} else {
 					serverStatus = "restarting";
 				}
 			}
+
 			for (UUID player : queue) {
 				String position = Integer.toString(queue.indexOf(player) + 1);
 				switch (serverStatus) {
 					default:
-						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigMessageAsComponent(plugin, "Notifications.QueuePosition", position, queueSize, PerServerConfigUtil.getServerDisplayName(plugin, server)));
+						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigMessageAsComponent(plugin, "Notifications.QueuePosition", position, queueSize, PerServerConfigUtil.getServerDisplayName(plugin, server.getName())));
 						break;
 					case "full":
-						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigMessageAsComponent(plugin, "Notifications.ServerIsFull", PerServerConfigUtil.getServerDisplayName(plugin, server), position, queueSize));
+						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigMessageAsComponent(plugin, "Notifications.ServerIsFull", PerServerConfigUtil.getServerDisplayName(plugin, server.getName()), position, queueSize));
 						break;
 					case "offline":
-						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigMessageAsComponent(plugin, "Notifications.ServerIsOffline", PerServerConfigUtil.getServerDisplayName(plugin, server), position, queueSize));
+						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigMessageAsComponent(plugin, "Notifications.ServerIsOffline", PerServerConfigUtil.getServerDisplayName(plugin, server.getName()), position, queueSize));
 						break;
 					case "restarting":
-						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigMessageAsComponent(plugin, "Notifications.ServerIsRestarting", PerServerConfigUtil.getServerDisplayName(plugin, server), position, queueSize));
+						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigMessageAsComponent(plugin, "Notifications.ServerIsRestarting", PerServerConfigUtil.getServerDisplayName(plugin, server.getName()), position, queueSize));
 						break;
 				}
 			}
 
-			boolean dontSend = plugin.disabledServers.contains(server) || !plugin.serverOnlineStatus.containsKey(server) || plugin.serverOnlineStatus.get(server) != ServerStatus.SPACE_AVAILABLE;
+			boolean dontSend = plugin.disabledServers.contains(server.getName()) || server.getStatus() != ServerStatus.SPACE_AVAILABLE;
 
-			ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(server);
-			for (int i = 0; i < queue.size() && i < PerServerConfigUtil.getInt(plugin, server, "PlayersPerSecond"); i++) {
+			ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(server.getName());
+
+			int pps = PerServerConfigUtil.getInt(plugin, server.getName(), "PlayersPerSecond");
+			String queueServerString = PerServerConfigUtil.getString(plugin, server.getName(), "QueueServer");
+			QueueableServer queueServer = null;
+			ServerInfo queueServerInfo = null;
+			if (!queueServerString.equals("")) {
+				queueServerInfo = ProxyServer.getInstance().getServerInfo(queueServerString);
+				if (queueServerInfo != null) {
+					queueServer = plugin.getServer(queueServerInfo);
+					queueServer.setHoldServer(true);
+				}
+			}
+
+			for (int i = 0; i < queue.size() && i < pps; i++) {
 				UUID target = queue.get(i);
 				ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(target);
+				QueueablePlayer queueablePlayer = plugin.getPlayer(proxiedPlayer);
 
-				String queueServer = PerServerConfigUtil.getString(plugin, server, "QueueServer");
+				if (queueServer != null && queueServer.getStatus() == ServerStatus.SPACE_AVAILABLE && queueServer.getAvailableSlots() > 0) {
+					queueServer.setAvailableSlots(queueServer.getAvailableSlots() - 1);
 
-				if (!queueServer.equals("") && plugin.serverOnlineStatus.containsKey(queueServer) && plugin.serverOnlineStatus.get(queueServer) == ServerStatus.SPACE_AVAILABLE) {
-					plugin.slotsFree.put(queueServer, plugin.slotsFree.get(queueServer) - 1);
-					proxiedPlayer.connect(ProxyServer.getInstance().getServerInfo(queueServer));
-					if (plugin.slotsFree.get(queueServer) < 1) {
-						plugin.serverOnlineStatus.put(queueServer, ServerStatus.FULL);
-					}
+					proxiedPlayer.connect(queueServerInfo);
+
 					// Do not send to both servers in the same second.
 					continue;
 				}
 
 				// Wait for them to connect to queue server first.
-				if (!queueServer.equals("") && !proxiedPlayer.getServer().getInfo().getName().equals(queueServer) && plugin.serverOnlineStatus.containsKey(queueServer) && plugin.serverOnlineStatus.get(queueServer) == ServerStatus.SPACE_AVAILABLE)
+				if (queueServer != null && !proxiedPlayer.getServer().getInfo().getName().equals(queueServer.getName()) && queueServer.getStatus() == ServerStatus.SPACE_AVAILABLE)
 					continue;
 
 				if (dontSend) continue;
 
-				if (i >= plugin.slotsFree.get(server)) continue;
+				if (i >= server.getAvailableSlots()) continue;
 
-				if (proxiedPlayer.getServer().getInfo().getName().equals(serverInfo.getName())) {
-					QueueUtil.removeFromQueue(plugin, target);
+				if (proxiedPlayer.getServer().getInfo().getName().equals(server.getName())) {
+					server.removeFromQueue(queueablePlayer);
 					return;
 				}
 
-				if (!plugin.connectionAttempts.containsKey(target))
-					plugin.connectionAttempts.put(target, 0);
+				queueablePlayer.setConnectionAttempts(queueablePlayer.getConnectionAttempts() + 1);
 
-				plugin.connectionAttempts.put(target, plugin.connectionAttempts.get(target) + 1);
-
-				proxiedPlayer.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.SendingYou", PerServerConfigUtil.getServerDisplayName(plugin, server)));
+				proxiedPlayer.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.SendingYou", PerServerConfigUtil.getServerDisplayName(plugin, server.getName())));
 				proxiedPlayer.connect(serverInfo);
 
-				if (plugin.connectionAttempts.get(target) > PerServerConfigUtil.getInt(plugin, server, "MaxSendAttempts")) {
-					QueueUtil.removeFromQueue(plugin, target);
-					proxiedPlayer.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.ReachedMaxAttempts", PerServerConfigUtil.getServerDisplayName(plugin, server)));
+				if (queueablePlayer.getConnectionAttempts() > PerServerConfigUtil.getInt(plugin, server.getName(), "MaxSendAttempts")) {
+					server.removeFromQueue(queueablePlayer);
+					proxiedPlayer.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.ReachedMaxAttempts", PerServerConfigUtil.getServerDisplayName(plugin, server.getName())));
 				}
 			}
 		}
 	}
 
 	public static void processServerPings(UQueue plugin) {
-		ListIterator<String> serversToPing = plugin.queueableServers.listIterator();
+		Collection<QueueableServer> serversToPing = plugin.queueableServers.values();
 
-		while (serversToPing.hasNext()) {
-			String server = serversToPing.next();
-
-			if (!plugin.queueServers.contains(server) && PerServerConfigUtil.getBoolean(plugin, server, "NoPingIfQueueEmpty") && !plugin.queues.containsKey(server)) {
-				plugin.slotsFree.remove(server);
-				plugin.serverOnlineStatus.remove(server);
-				plugin.serverStatusSince.remove(server);
+		for (QueueableServer server : serversToPing) {
+			if (!server.isHoldServer() && PerServerConfigUtil.getBoolean(plugin, server.getName(), "NoPingIfQueueEmpty") && server.getQueueLength() == 0) {
+				server.setStatus(null);
 				continue;
 			}
 
-			String queueServer = PerServerConfigUtil.getString(plugin, server, "QueueServer");
+			String queueServer = PerServerConfigUtil.getString(plugin, server.getName(), "QueueServer");
 
 			if (!queueServer.equals("")) {
 				ServerInfo serverInfo = plugin.getProxy().getServerInfo(queueServer);
-				if (serverInfo != null && !plugin.queueServers.contains(serverInfo.getName())) {
-					plugin.queueServers.add(queueServer);
-					serversToPing.add(queueServer);
+				if (serverInfo != null) {
+					QueueableServer queueableQueueServer = plugin.getServer(serverInfo);
+					queueableQueueServer.setHoldServer(true);
 				}
 			}
 
-			ProxyServer.getInstance().getServerInfo(server).ping((serverPing, throwable) -> {
+			ProxyServer.getInstance().getServerInfo(server.getName()).ping((serverPing, throwable) -> {
 				ServerStatus status = ServerStatus.OFFLINE;
+
 				if (serverPing != null) {
 					int slotsAvailable = serverPing.getPlayers().getMax() - serverPing.getPlayers().getOnline();
-					plugin.slotsFree.put(server, slotsAvailable);
+					server.setAvailableSlots(slotsAvailable);
 					status = slotsAvailable <= 0 ? ServerStatus.FULL : ServerStatus.SPACE_AVAILABLE;
 				}
-				ServerStatus previousStatus = plugin.serverOnlineStatus.get(server);
-				plugin.serverOnlineStatus.put(server, status);
-				if (!plugin.serverStatusSince.containsKey(server)) {
-					plugin.serverStatusSince.put(server, System.currentTimeMillis());
-					return;
-				}
-				if (!previousStatus.equals(status)) plugin.serverStatusSince.put(server, System.currentTimeMillis());
+
+				server.setStatus(status);
 			});
 		}
 	}
@@ -146,10 +152,13 @@ public class ScheduledTaskUtil {
 	public static void processPluginMessages(UQueue plugin) {
 		for (ProxiedPlayer p : plugin.getProxy().getPlayers()) {
 			if (p.getServer() == null) continue;
-			boolean queued = plugin.queuedFor.containsKey(p.getUniqueId());
-			String server = queued ? plugin.queuedFor.get(p.getUniqueId()) : "";
-			int queuePosition = queued ? plugin.queues.get(server).indexOf(p.getUniqueId()) + 1 : 0;
-			int queueTotal = queued ? plugin.queues.get(server).size() : 0;
+
+			QueueablePlayer queueablePlayer = plugin.getPlayer(p);
+
+			boolean queued = queueablePlayer.isQueued();
+			String server = queued ? queueablePlayer.getQueuedServer().getName() : "";
+			int queuePosition = queued ? queueablePlayer.getQueuedServer().getQueuePosition(queueablePlayer) : 0;
+			int queueTotal = queued ? queueablePlayer.getQueuedServer().getQueueLength() : 0;
 
 			p.getServer().sendData("uqueue:queueupdate", PluginMessageUtil.toBytes(queued, server, queuePosition, queueTotal));
 		}

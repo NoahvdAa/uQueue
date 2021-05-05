@@ -1,10 +1,10 @@
 package me.noahvdaa.uqueue.commands;
 
 import me.noahvdaa.uqueue.UQueue;
+import me.noahvdaa.uqueue.api.util.QueueablePlayer;
+import me.noahvdaa.uqueue.api.util.QueueableServer;
 import me.noahvdaa.uqueue.util.ChatUtil;
 import me.noahvdaa.uqueue.util.PerServerConfigUtil;
-import me.noahvdaa.uqueue.util.PermissionUtil;
-import me.noahvdaa.uqueue.util.QueueUtil;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -31,23 +31,24 @@ public class QueueCommand extends Command implements TabExecutor {
 			return;
 		}
 		ProxiedPlayer p = (ProxiedPlayer) sender;
+		QueueablePlayer queueablePlayer = plugin.getPlayer(p);
 
 		if (args.length != 1) {
 			sender.sendMessage(ChatUtil.colorizeAsPrefixedComponent(plugin, "&cUsage: /queue <server>"));
 			return;
 		}
 
-		String target = args[0].toLowerCase();
-
-		if (!PermissionUtil.mayQueueForServer(plugin, p, target)) {
-			sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.NotAllowedToQueue"));
-			return;
-		}
-
-		ServerInfo server = ProxyServer.getInstance().getServerInfo(args[0]);
+		ServerInfo server = ProxyServer.getInstance().getServerInfo(args[0].toLowerCase());
 
 		if (server == null) {
 			sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.ServerDoesntExist"));
+			return;
+		}
+
+		QueueableServer queueableServer = plugin.getServer(server);
+
+		if (!queueableServer.mayQueue(queueablePlayer)) {
+			sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.NotAllowedToQueue"));
 			return;
 		}
 
@@ -62,17 +63,18 @@ public class QueueCommand extends Command implements TabExecutor {
 			return;
 		}
 
-		if (plugin.queuedFor.containsKey(p.getUniqueId())) {
-			String queuedFor = plugin.queuedFor.get(p.getUniqueId());
+		if (queueablePlayer.isQueued()) {
+			String queuedFor = queueablePlayer.getQueuedServer().getName();
 			if (queuedFor.equals(server.getName())) {
 				sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.AlreadyQueuedForSameServer"));
 				return;
 			}
-			QueueUtil.removeFromQueue(plugin, p.getUniqueId());
+			queueablePlayer.getQueuedServer().removeFromQueue(queueablePlayer);
 			sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.LeftQueueFor", PerServerConfigUtil.getServerDisplayName(plugin, queuedFor)));
 		}
 
-		QueueUtil.insertIntoQueue(plugin, server.getName(), p.getUniqueId(), PermissionUtil.getQueuePriority(p, server.getName()));
+		queueableServer.addToQueue(queueablePlayer);
+		queueablePlayer.setConnectionAttempts(0);
 		sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.NowQueuedFor", PerServerConfigUtil.getServerDisplayName(plugin, server.getName())));
 	}
 
@@ -83,10 +85,12 @@ public class QueueCommand extends Command implements TabExecutor {
 		if (!(sender instanceof ProxiedPlayer)) return suggestions;
 
 		ProxiedPlayer p = (ProxiedPlayer) sender;
+		QueueablePlayer queueablePlayer = plugin.getPlayer(p);
 
-		for (String server : plugin.getProxy().getServers().keySet()) {
-			if (PermissionUtil.mayQueueForServer(plugin, p, server))
-				suggestions.add(server);
+		for (ServerInfo server : plugin.getProxy().getServers().values()) {
+			QueueableServer queueableServer = plugin.getServer(server);
+			if (queueableServer.mayQueue(queueablePlayer))
+				suggestions.add(server.getName());
 		}
 
 		return suggestions;

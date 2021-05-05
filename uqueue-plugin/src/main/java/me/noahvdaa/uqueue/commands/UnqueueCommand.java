@@ -1,9 +1,9 @@
 package me.noahvdaa.uqueue.commands;
 
 import me.noahvdaa.uqueue.UQueue;
+import me.noahvdaa.uqueue.api.util.QueueablePlayer;
 import me.noahvdaa.uqueue.util.ChatUtil;
 import me.noahvdaa.uqueue.util.PerServerConfigUtil;
-import me.noahvdaa.uqueue.util.QueueUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -26,15 +26,16 @@ public class UnqueueCommand extends Command {
 			return;
 		}
 		ProxiedPlayer p = (ProxiedPlayer) sender;
+		QueueablePlayer queueablePlayer = plugin.getPlayer(p);
 
-		if (!plugin.queuedFor.containsKey(p.getUniqueId())) {
+		if (!queueablePlayer.isQueued()) {
 			sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Unqueue.NotQueued"));
 			return;
 		}
 
-		String queuedFor = plugin.queuedFor.get(p.getUniqueId());
+		String queuedFor = queueablePlayer.getQueuedServer().getName();
 
-		QueueUtil.removeFromQueue(plugin, p.getUniqueId());
+		queueablePlayer.getQueuedServer().removeFromQueue(queueablePlayer);
 		sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.LeftQueueFor", PerServerConfigUtil.getServerDisplayName(plugin, queuedFor)));
 		// Clear queue position message.
 		p.sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(""));
