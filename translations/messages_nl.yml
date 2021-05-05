@@ -1,0 +1,36 @@
+#
+#         ____
+#        / __ \
+#  _   _| |  | |_   _  ___ _   _  ___
+# | | | | |  | | | | |/ _ \ | | |/ _ \
+# | |_| | |__| | |_| |  __/ |_| |  __/
+#  \__,_|\___\_\\__,_|\___|\__,_|\___|
+#
+# By NoahvdAa
+#
+# Nederlandse Vertaling
+# Vertaald door NoahvdAa
+#
+Commands:
+  Queue:
+    AlreadyHere: "&cJe bent al op deze server!"
+    AlreadyQueuedForSameServer: "&cJe staat al in de rij voor deze server."
+    LeftQueueFor: "&eJe staat nu niet meer in de rij voor &b%1%&e."
+    NotAllowedToQueue: "&cJe mag niet in de rij voor deze server gaan staan."
+    NowQueuedFor: "&aJe staat nu in de rij voor %1%."
+    ServerDoesntExist: "&cDie server bestaat niet."
+  uQueue:
+    NoPermissions: "&cJe hebt niet genoeg permissies om subcommando's te gebruiken."
+  Unqueue:
+    NotQueued: "&cJe staat voor geen enkele server in de rij."
+
+Notifications:
+  QueuePosition: "&7Je bent in positie %1%/%2% voor %3%."
+  ServerIsFull: "&c%1% is vol. &7Je bent in positie %2%/%3%."
+  ServerIsOffline: "&c%1% is offline. &7Je bent in positie %2%/%3%."
+  ServerIsRestarting: "&c%1% herstart. &7Je bent in positie %2%/%3%."
+  SendingYou: "&7Je wordt naar %1% gestuurd..."
+  ReachedMaxAttempts: "&cKan je niet naar %1% sturen: maximale aantal verbindspogingen bereikt."
+
+# VERANDER DIT NIET! DIT WORDT AUTOMATISCH GEUPDATED DOOR DE PLUGIN!
+messagesVersion: 1
