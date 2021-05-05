@@ -5,3 +5,16 @@
 ## Documentation
 
 The documentation for this plugin can be found on my [wiki site](https://wiki.noah.pm/books/uqueue).
+
+## Translations
+
+Translated versions of messages.yml can be found in the [translations folder](https://github.com/NoahvdAa/uQueue/tree/master/translations). When creating a new translation, you should put your name right below the ASCII art, like this:
+
+```
+# <ascii art>
+# By NoahvdAa
+#
+# <language> Translation (In the language you're translating in)
+# Translated by <your name> (In the language you're translating in)
+#
+```
