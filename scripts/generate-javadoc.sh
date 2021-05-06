@@ -5,4 +5,5 @@ echo Sleeping for 5 seconds...
 
 sleep 5
 
+rm -rf javadocs/
 mvn javadoc:javadoc
