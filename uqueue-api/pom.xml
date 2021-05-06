@@ -11,6 +11,11 @@
 
     <artifactId>uqueue-api</artifactId>
 
+    <properties>
+        <!-- Deploy the API! -->
+        <maven.deploy.skip>false</maven.deploy.skip>
+    </properties>
+
     <build>
         <plugins>
             <plugin>

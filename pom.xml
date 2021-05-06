@@ -6,11 +6,15 @@
 	<artifactId>uqueue</artifactId>
 	<packaging>pom</packaging>
 	<version>1.0.0</version>
+
 	<modules>
 		<module>uqueue-api</module>
 		<module>uqueue-plugin</module>
 	</modules>
+
 	<properties>
+		<!-- Don't deploy the parent project! -->
+		<maven.deploy.skip>true</maven.deploy.skip>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
@@ -34,9 +38,8 @@
 
 	<distributionManagement>
 		<repository>
-			<id>releases</id>
+			<id>noah.pm-releases</id>
 			<url>https://repo.noah.pm/repository/maven-releases/</url>
 		</repository>
 	</distributionManagement>
-
 </project>

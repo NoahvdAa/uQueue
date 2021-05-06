@@ -18,3 +18,7 @@ Translated versions of messages.yml can be found in the [translations folder](ht
 # Translated by <your name> (In the language you're translating in)
 #
 ```
+
+## Developer API
+
+uQueue has a developer API, for instructions on how to use it, check the [wiki page](https://wiki.noah.pm/books/uqueue/chapter/developer-api)

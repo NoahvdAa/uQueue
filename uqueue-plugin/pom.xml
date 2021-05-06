@@ -11,6 +11,8 @@
     <artifactId>UQueue-plugin</artifactId>
 
     <properties>
+        <!-- Don't deploy the plugin! -->
+        <maven.deploy.skip>true</maven.deploy.skip>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
