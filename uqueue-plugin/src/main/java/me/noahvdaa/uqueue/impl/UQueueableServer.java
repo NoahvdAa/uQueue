@@ -4,6 +4,7 @@ import me.noahvdaa.uqueue.UQueue;
 import me.noahvdaa.uqueue.api.util.QueueablePlayer;
 import me.noahvdaa.uqueue.api.util.QueueableServer;
 import me.noahvdaa.uqueue.api.util.ServerStatus;
+import me.noahvdaa.uqueue.util.PerServerConfigUtil;
 import me.noahvdaa.uqueue.util.PermissionUtil;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -12,9 +13,9 @@ import java.util.*;
 
 public class UQueueableServer implements QueueableServer {
 
-	private String name;
-	private List<UUID> queue;
-	private Map<UUID, Integer> priorities;
+	private final String name;
+	private final List<UUID> queue;
+	private final Map<UUID, Integer> priorities;
 	private boolean isHoldServer;
 	private ServerStatus status;
 	private Long statusLastUpdated;
@@ -22,13 +23,18 @@ public class UQueueableServer implements QueueableServer {
 
 	public UQueueableServer(String name) {
 		this.name = name;
-		this.queue = new ArrayList<UUID>();
-		this.priorities = new HashMap<UUID, Integer>();
+		this.queue = new ArrayList<>();
+		this.priorities = new HashMap<>();
 	}
 
 	@Override
 	public String getName() {
 		return this.name;
+	}
+
+	@Override
+	public String getDisplayName() {
+		return PerServerConfigUtil.getServerDisplayName(UQueue.getInstance(), this.name);
 	}
 
 	@Override

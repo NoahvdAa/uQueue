@@ -4,7 +4,6 @@ import me.noahvdaa.uqueue.UQueue;
 import me.noahvdaa.uqueue.api.util.QueueablePlayer;
 import me.noahvdaa.uqueue.api.util.QueueableServer;
 import me.noahvdaa.uqueue.util.ChatUtil;
-import me.noahvdaa.uqueue.util.PerServerConfigUtil;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -52,14 +51,14 @@ public class PlayerListener implements Listener {
 		if (!queueableServer.mayQueue(queueablePlayer)) return;
 
 		if (p.hasPermission("uqueue.bypass." + server.getName())) {
-			p.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.SendingYou", PerServerConfigUtil.getServerDisplayName(plugin, server.getName())));
+			p.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.SendingYou", queueableServer.getDisplayName()));
 			p.connect(server);
 			return;
 		}
 
 		queueableServer.addToQueue(queueablePlayer);
 		queueablePlayer.setConnectionAttempts(0);
-		p.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.NowQueuedFor", PerServerConfigUtil.getServerDisplayName(plugin, server.getName())));
+		p.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.NowQueuedFor", queueableServer.getDisplayName()));
 	}
 
 	@EventHandler

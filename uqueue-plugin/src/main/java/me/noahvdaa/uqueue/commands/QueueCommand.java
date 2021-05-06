@@ -53,7 +53,7 @@ public class QueueCommand extends Command implements TabExecutor {
 		}
 
 		if (p.hasPermission("uqueue.bypass." + server.getName())) {
-			sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.SendingYou", PerServerConfigUtil.getServerDisplayName(plugin, server.getName())));
+			sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.SendingYou", queueableServer.getDisplayName()));
 			p.connect(server);
 			return;
 		}
@@ -70,12 +70,12 @@ public class QueueCommand extends Command implements TabExecutor {
 				return;
 			}
 			queueablePlayer.getQueuedServer().removeFromQueue(queueablePlayer);
-			sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.LeftQueueFor", PerServerConfigUtil.getServerDisplayName(plugin, queuedFor)));
+			sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.LeftQueueFor", queueableServer.getDisplayName()));
 		}
 
 		queueableServer.addToQueue(queueablePlayer);
 		queueablePlayer.setConnectionAttempts(0);
-		sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.NowQueuedFor", PerServerConfigUtil.getServerDisplayName(plugin, server.getName())));
+		sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.NowQueuedFor", queueableServer.getDisplayName()));
 	}
 
 	@Override

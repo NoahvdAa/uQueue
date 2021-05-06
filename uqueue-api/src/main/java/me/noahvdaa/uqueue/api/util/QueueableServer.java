@@ -16,6 +16,13 @@ public interface QueueableServer {
 	String getName();
 
 	/**
+	 * Returns the display name of the server. This display name may be the same for multiple servers.
+	 *
+	 * @return The display name of this server.
+	 */
+	String getDisplayName();
+
+	/**
 	 * Returns the player's position in the queue or null if they aren't queued for this server.
 	 * The first position in the queue is "1".
 	 *
