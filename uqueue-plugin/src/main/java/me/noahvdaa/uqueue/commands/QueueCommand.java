@@ -4,7 +4,6 @@ import me.noahvdaa.uqueue.UQueue;
 import me.noahvdaa.uqueue.api.util.QueueablePlayer;
 import me.noahvdaa.uqueue.api.util.QueueableServer;
 import me.noahvdaa.uqueue.util.ChatUtil;
-import me.noahvdaa.uqueue.util.PerServerConfigUtil;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
