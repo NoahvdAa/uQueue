@@ -1,22 +1,23 @@
 package me.noahvdaa.uqueue.util;
 
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.LuckPermsProvider;
-import net.luckperms.api.model.user.User;
-import net.luckperms.api.node.Node;
-import net.luckperms.api.node.NodeType;
-import net.luckperms.api.query.QueryOptions;
+import me.noahvdaa.uqueue.util.permissions.BungeePermsPermissionUtil;
+import me.noahvdaa.uqueue.util.permissions.LuckPermsPermissionUtil;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.PluginManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.SortedSet;
 
 public class PermissionUtil {
 
 	public static String getPermissionProvider() {
-		if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
+		PluginManager pluginManager = ProxyServer.getInstance().getPluginManager();
+		if (pluginManager.getPlugin("BungeePerms") != null) {
+			return "BungeePerms";
+		} else if (pluginManager.getPlugin("LuckPerms") != null) {
 			return "LuckPerms";
 		}
 		return "other";
@@ -25,23 +26,12 @@ public class PermissionUtil {
 	public static Collection<String> getPermissions(ProxiedPlayer p) {
 		String permissionProvider = getPermissionProvider();
 
-		if (permissionProvider.equals("LuckPerms")) {
-			LuckPerms lpAPI = LuckPermsProvider.get();
+		// Permission fetchers are split across classes to prevent ClassNotFound exceptions.
 
-			User lpuser = lpAPI.getUserManager().getUser(p.getUniqueId());
-
-			// Fetch all permissions with the current context.
-			SortedSet<Node> permissions = lpuser.resolveDistinctInheritedNodes(QueryOptions.contextual(lpuser.getQueryOptions().context()));
-			Collection<String> out = new ArrayList<String>();
-
-			for (Node node : permissions) {
-				if (node.getType() != NodeType.PERMISSION) continue;
-				// Permission is set to false.
-				if (!node.getValue()) continue;
-				out.add(node.getKey());
-			}
-
-			return out;
+		if (permissionProvider.equals("BungeePerms")) {
+			return BungeePermsPermissionUtil.getBungeePermsPermissions(p);
+		} else if (permissionProvider.equals("LuckPerms")) {
+			return LuckPermsPermissionUtil.getPermissions(p);
 		}
 
 		// TODO: Integrations for other permission plugins.
