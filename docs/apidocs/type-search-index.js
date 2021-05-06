@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes","u":"allclasses-index.html"},{"p":"me.noahvdaa.uqueue.api.util","l":"QueueablePlayer"},{"p":"me.noahvdaa.uqueue.api.util","l":"QueueableServer"},{"p":"me.noahvdaa.uqueue.api.util","l":"ServerStatus"},{"p":"me.noahvdaa.uqueue.api","l":"UQueuePlugin"}];updateSearchResults();
