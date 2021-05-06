@@ -13,7 +13,7 @@ public interface UQueuePlugin {
 	/**
 	 * Returns the QueueablePlayer object from a ProxiedPlayer.
 	 *
-	 * @param player The ProxiedPlayer to get a QueueablePlayer instance out of.
+	 * @param player The ProxiedPlayer to get a QueueablePlayer instance from.
 	 * @return The Queueable player belonging to this ProxiedPlayer.
 	 */
 	QueueablePlayer getPlayer(ProxiedPlayer player);
@@ -21,7 +21,7 @@ public interface UQueuePlugin {
 	/**
 	 * Returns the QueueableServer object from ServerInfo.
 	 *
-	 * @param info The ServerInfo to get a QueueablePlayer instance out of.
+	 * @param info The ServerInfo to get a QueueablePlayer instance from.
 	 * @return The Queueable server belonging to this ServerInfo.
 	 */
 	QueueableServer getServer(ServerInfo info);
