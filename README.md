@@ -22,4 +22,4 @@ Translated versions of messages.yml can be found in the [translations folder](ht
 
 ## Developer API
 
-uQueue has a developer API, for instructions on how to use it, check the [wiki page](https://wiki.noah.pm/books/uqueue/chapter/developer-api)
+uQueue has a developer API, for instructions on how to use it, check the [wiki page](https://wiki.noah.pm/books/uqueue/chapter/developer-api). The javadoc can be found on [Github Pages](https://noahvdaa.github.io/uQueue/javadocs/index.html).
