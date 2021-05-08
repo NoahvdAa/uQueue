@@ -33,7 +33,7 @@ public class ScheduledTaskUtil {
 					serverStatus = "online";
 				}
 			} else {
-				long offlineFor = server.getStatusLastUpdated();
+				long offlineFor = System.currentTimeMillis() - server.getStatusLastUpdated();
 
 				if (offlineFor > PerServerConfigUtil.getInt(plugin, server.getName(), "RestartLength") * 1000L) {
 					serverStatus = "offline";
