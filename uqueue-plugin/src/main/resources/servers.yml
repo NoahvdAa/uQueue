@@ -19,6 +19,7 @@
 #   NoPingIfQueueEmpty: false
 #   DisplayAs: "Server Name"
 #   QueueServer: "limbo"
+#   InfiniteSlots: false
 exampleserver:
   PlayersPerSecond: 2
   RestartLength: 60
@@ -26,3 +27,4 @@ exampleserver:
   NoPingIfQueueEmpty: false
   DisplayAs: "Example Server"
   QueueServer: "limbo"
+  InfiniteSlots: false

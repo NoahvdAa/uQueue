@@ -21,13 +21,14 @@ public class ScheduledTaskUtil {
 
 			String queueSize = Integer.toString(queue.size());
 			String serverStatus;
+			boolean ignoreFull = PerServerConfigUtil.getBoolean(plugin, server.getName(), "InfiniteSlots");
 
 			if (server.getStatus() == null) {
 				// Not pinged yet.
 				serverStatus = "online";
 			} else if (server.getStatus() != ServerStatus.OFFLINE) {
 				// Is it full?
-				if (server.getStatus() == ServerStatus.FULL) {
+				if (server.getStatus() == ServerStatus.FULL && !ignoreFull) {
 					serverStatus = "full";
 				} else {
 					serverStatus = "online";
@@ -60,7 +61,7 @@ public class ScheduledTaskUtil {
 				}
 			}
 
-			boolean dontSend = plugin.disabledServers.contains(server.getName()) || server.getStatus() != ServerStatus.SPACE_AVAILABLE;
+			boolean dontSend = plugin.disabledServers.contains(server.getName()) || (!ignoreFull && server.getStatus() != ServerStatus.SPACE_AVAILABLE);
 
 			ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(server.getName());
 
@@ -96,7 +97,7 @@ public class ScheduledTaskUtil {
 
 				if (dontSend) continue;
 
-				if (i >= server.getAvailableSlots()) continue;
+				if (!ignoreFull && i >= server.getAvailableSlots()) continue;
 
 				if (proxiedPlayer.getServer().getInfo().getName().equals(server.getName())) {
 					server.removeFromQueue(queueablePlayer);
