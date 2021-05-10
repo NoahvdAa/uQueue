@@ -81,11 +81,13 @@ public class ScheduledTaskUtil {
 		String queueServerString = PerServerConfigUtil.getString(plugin, server.getName(), "QueueServer");
 		QueueableServer queueServer = null;
 		ServerInfo queueServerInfo = null;
+		boolean queueIgnoreFull = false;
 		if (!queueServerString.equals("")) {
 			queueServerInfo = ProxyServer.getInstance().getServerInfo(queueServerString);
 			if (queueServerInfo != null) {
 				queueServer = plugin.getServer(queueServerInfo);
 				queueServer.setHoldServer(true);
+				queueIgnoreFull = PerServerConfigUtil.getBoolean(plugin, queueServer.getName(), "InfiniteSlots");
 			}
 		}
 
@@ -94,7 +96,7 @@ public class ScheduledTaskUtil {
 			ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(target);
 			QueueablePlayer queueablePlayer = plugin.getPlayer(proxiedPlayer);
 
-			if (queueServer != null && queueServer.getStatus() == ServerStatus.SPACE_AVAILABLE && queueServer.getAvailableSlots() > 0) {
+			if (queueServer != null && queueServer.getStatus() != ServerStatus.OFFLINE && (queueIgnoreFull || queueServer.getAvailableSlots() > 0)) {
 				queueServer.setAvailableSlots(queueServer.getAvailableSlots() - 1);
 
 				proxiedPlayer.connect(queueServerInfo);
@@ -104,7 +106,7 @@ public class ScheduledTaskUtil {
 			}
 
 			// Wait for them to connect to queue server first.
-			if (queueServer != null && !proxiedPlayer.getServer().getInfo().getName().equals(queueServer.getName()) && queueServer.getStatus() == ServerStatus.SPACE_AVAILABLE)
+			if (queueServer != null && !proxiedPlayer.getServer().getInfo().getName().equals(queueServer.getName()) && (queueIgnoreFull || queueServer.getStatus() == ServerStatus.SPACE_AVAILABLE))
 				continue;
 
 			if (dontSend) continue;
