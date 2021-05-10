@@ -15,104 +15,115 @@ import java.util.UUID;
 
 public class ScheduledTaskUtil {
 
-	public static void processQueueNotifications(UQueue plugin) {
+	public static void processQueue(UQueue plugin) {
 		for (QueueableServer server : plugin.queueableServers.values()) {
-			List<UUID> queue = server.getQueuedPlayers();
+			processQueueNotifications(server, plugin);
+			processQueueSending(server, plugin);
+		}
+	}
 
-			String queueSize = Integer.toString(queue.size());
-			String serverStatus;
-			boolean ignoreFull = PerServerConfigUtil.getBoolean(plugin, server.getName(), "InfiniteSlots");
+	private static void processQueueNotifications(QueueableServer server, UQueue plugin){
+		List<UUID> queue = server.getQueuedPlayers();
 
-			if (server.getStatus() == null) {
-				// Not pinged yet.
-				serverStatus = "online";
-			} else if (server.getStatus() != ServerStatus.OFFLINE) {
-				// Is it full?
-				if (server.getStatus() == ServerStatus.FULL && !ignoreFull) {
-					serverStatus = "full";
-				} else {
-					serverStatus = "online";
-				}
+		String queueSize = Integer.toString(queue.size());
+		String serverStatus;
+		boolean ignoreFull = PerServerConfigUtil.getBoolean(plugin, server.getName(), "InfiniteSlots");
+
+		if (server.getStatus() == null) {
+			// Not pinged yet.
+			serverStatus = "online";
+		} else if (server.getStatus() != ServerStatus.OFFLINE) {
+			// Is it full?
+			if (server.getStatus() == ServerStatus.FULL && !ignoreFull) {
+				serverStatus = "full";
 			} else {
-				long offlineFor = System.currentTimeMillis() - server.getStatusLastUpdated();
+				serverStatus = "online";
+			}
+		} else {
+			long offlineFor = System.currentTimeMillis() - server.getStatusLastUpdated();
 
-				if (offlineFor > PerServerConfigUtil.getInt(plugin, server.getName(), "RestartLength") * 1000L) {
-					serverStatus = "offline";
-				} else {
-					serverStatus = "restarting";
-				}
+			if (offlineFor > PerServerConfigUtil.getInt(plugin, server.getName(), "RestartLength") * 1000L) {
+				serverStatus = "offline";
+			} else {
+				serverStatus = "restarting";
+			}
+		}
+
+		for (UUID player : queue) {
+			String position = Integer.toString(queue.indexOf(player) + 1);
+			switch (serverStatus) {
+				default:
+					ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigMessageAsComponent(plugin, "Notifications.QueuePosition", position, queueSize, PerServerConfigUtil.getServerDisplayName(plugin, server.getName())));
+					break;
+				case "full":
+					ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigMessageAsComponent(plugin, "Notifications.ServerIsFull", PerServerConfigUtil.getServerDisplayName(plugin, server.getName()), position, queueSize));
+					break;
+				case "offline":
+					ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigMessageAsComponent(plugin, "Notifications.ServerIsOffline", PerServerConfigUtil.getServerDisplayName(plugin, server.getName()), position, queueSize));
+					break;
+				case "restarting":
+					ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigMessageAsComponent(plugin, "Notifications.ServerIsRestarting", PerServerConfigUtil.getServerDisplayName(plugin, server.getName()), position, queueSize));
+					break;
+			}
+		}
+	}
+
+	private static void processQueueSending(QueueableServer server, UQueue plugin){
+		List<UUID> queue = server.getQueuedPlayers();
+
+		boolean ignoreFull = PerServerConfigUtil.getBoolean(plugin, server.getName(), "InfiniteSlots");
+
+		boolean dontSend = plugin.disabledServers.contains(server.getName()) || (!ignoreFull && server.getStatus() != ServerStatus.SPACE_AVAILABLE);
+
+		ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(server.getName());
+
+		int pps = PerServerConfigUtil.getInt(plugin, server.getName(), "PlayersPerSecond");
+		String queueServerString = PerServerConfigUtil.getString(plugin, server.getName(), "QueueServer");
+		QueueableServer queueServer = null;
+		ServerInfo queueServerInfo = null;
+		if (!queueServerString.equals("")) {
+			queueServerInfo = ProxyServer.getInstance().getServerInfo(queueServerString);
+			if (queueServerInfo != null) {
+				queueServer = plugin.getServer(queueServerInfo);
+				queueServer.setHoldServer(true);
+			}
+		}
+
+		for (int i = 0; i < queue.size() && i < pps; i++) {
+			UUID target = queue.get(i);
+			ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(target);
+			QueueablePlayer queueablePlayer = plugin.getPlayer(proxiedPlayer);
+
+			if (queueServer != null && queueServer.getStatus() == ServerStatus.SPACE_AVAILABLE && queueServer.getAvailableSlots() > 0) {
+				queueServer.setAvailableSlots(queueServer.getAvailableSlots() - 1);
+
+				proxiedPlayer.connect(queueServerInfo);
+
+				// Do not send to both servers in the same second.
+				continue;
 			}
 
-			for (UUID player : queue) {
-				String position = Integer.toString(queue.indexOf(player) + 1);
-				switch (serverStatus) {
-					default:
-						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigMessageAsComponent(plugin, "Notifications.QueuePosition", position, queueSize, PerServerConfigUtil.getServerDisplayName(plugin, server.getName())));
-						break;
-					case "full":
-						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigMessageAsComponent(plugin, "Notifications.ServerIsFull", PerServerConfigUtil.getServerDisplayName(plugin, server.getName()), position, queueSize));
-						break;
-					case "offline":
-						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigMessageAsComponent(plugin, "Notifications.ServerIsOffline", PerServerConfigUtil.getServerDisplayName(plugin, server.getName()), position, queueSize));
-						break;
-					case "restarting":
-						ProxyServer.getInstance().getPlayer(player).sendMessage(ChatMessageType.ACTION_BAR, ChatUtil.getConfigMessageAsComponent(plugin, "Notifications.ServerIsRestarting", PerServerConfigUtil.getServerDisplayName(plugin, server.getName()), position, queueSize));
-						break;
-				}
+			// Wait for them to connect to queue server first.
+			if (queueServer != null && !proxiedPlayer.getServer().getInfo().getName().equals(queueServer.getName()) && queueServer.getStatus() == ServerStatus.SPACE_AVAILABLE)
+				continue;
+
+			if (dontSend) continue;
+
+			if (!ignoreFull && i >= server.getAvailableSlots()) continue;
+
+			if (proxiedPlayer.getServer().getInfo().getName().equals(server.getName())) {
+				server.removeFromQueue(queueablePlayer);
+				return;
 			}
 
-			boolean dontSend = plugin.disabledServers.contains(server.getName()) || (!ignoreFull && server.getStatus() != ServerStatus.SPACE_AVAILABLE);
+			queueablePlayer.setConnectionAttempts(queueablePlayer.getConnectionAttempts() + 1);
 
-			ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(server.getName());
+			proxiedPlayer.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.SendingYou", PerServerConfigUtil.getServerDisplayName(plugin, server.getName())));
+			proxiedPlayer.connect(serverInfo);
 
-			int pps = PerServerConfigUtil.getInt(plugin, server.getName(), "PlayersPerSecond");
-			String queueServerString = PerServerConfigUtil.getString(plugin, server.getName(), "QueueServer");
-			QueueableServer queueServer = null;
-			ServerInfo queueServerInfo = null;
-			if (!queueServerString.equals("")) {
-				queueServerInfo = ProxyServer.getInstance().getServerInfo(queueServerString);
-				if (queueServerInfo != null) {
-					queueServer = plugin.getServer(queueServerInfo);
-					queueServer.setHoldServer(true);
-				}
-			}
-
-			for (int i = 0; i < queue.size() && i < pps; i++) {
-				UUID target = queue.get(i);
-				ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(target);
-				QueueablePlayer queueablePlayer = plugin.getPlayer(proxiedPlayer);
-
-				if (queueServer != null && queueServer.getStatus() == ServerStatus.SPACE_AVAILABLE && queueServer.getAvailableSlots() > 0) {
-					queueServer.setAvailableSlots(queueServer.getAvailableSlots() - 1);
-
-					proxiedPlayer.connect(queueServerInfo);
-
-					// Do not send to both servers in the same second.
-					continue;
-				}
-
-				// Wait for them to connect to queue server first.
-				if (queueServer != null && !proxiedPlayer.getServer().getInfo().getName().equals(queueServer.getName()) && queueServer.getStatus() == ServerStatus.SPACE_AVAILABLE)
-					continue;
-
-				if (dontSend) continue;
-
-				if (!ignoreFull && i >= server.getAvailableSlots()) continue;
-
-				if (proxiedPlayer.getServer().getInfo().getName().equals(server.getName())) {
-					server.removeFromQueue(queueablePlayer);
-					return;
-				}
-
-				queueablePlayer.setConnectionAttempts(queueablePlayer.getConnectionAttempts() + 1);
-
-				proxiedPlayer.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.SendingYou", PerServerConfigUtil.getServerDisplayName(plugin, server.getName())));
-				proxiedPlayer.connect(serverInfo);
-
-				if (queueablePlayer.getConnectionAttempts() > PerServerConfigUtil.getInt(plugin, server.getName(), "MaxSendAttempts")) {
-					server.removeFromQueue(queueablePlayer);
-					proxiedPlayer.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.ReachedMaxAttempts", PerServerConfigUtil.getServerDisplayName(plugin, server.getName())));
-				}
+			if (queueablePlayer.getConnectionAttempts() > PerServerConfigUtil.getInt(plugin, server.getName(), "MaxSendAttempts")) {
+				server.removeFromQueue(queueablePlayer);
+				proxiedPlayer.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Notifications.ReachedMaxAttempts", PerServerConfigUtil.getServerDisplayName(plugin, server.getName())));
 			}
 		}
 	}
