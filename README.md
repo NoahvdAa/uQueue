@@ -4,6 +4,8 @@
 	<a href="https://www.codacy.com/gh/NoahvdAa/uQueue/dashboard?utm_source=github.com&utm_medium=referral&utm_content=NoahvdAa/uQueue&utm_campaign=Badge_Grade">
 		<img src="https://app.codacy.com/project/badge/Grade/44544d06edf545ee921509834a595b1f">
 	</a>
+</p>
+<p align="center">
 	<a href="https://bstats.org/plugin/bungeecord/uQueue/11230">
 		<img src="https://img.shields.io/bstats/servers/11230">
 		<img src="https://img.shields.io/bstats/players/11230">
