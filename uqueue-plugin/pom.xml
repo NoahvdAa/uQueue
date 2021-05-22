@@ -146,6 +146,7 @@
             <version>2.2.1</version>
             <scope>compile</scope>
         </dependency>
+        <!-- Shade in the API. -->
         <dependency>
             <artifactId>uqueue-api</artifactId>
             <groupId>me.noahvdaa.uqueue</groupId>

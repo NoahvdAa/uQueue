@@ -53,6 +53,8 @@ public class PlaceholderImplementation extends PlaceholderExpansion {
 				return Integer.toString(message.queueLength);
 			case "queued_for":
 				return message.server;
+			case "queued_for_display_name":
+				return message.serverDisplayName;
 			default:
 				return "unknown placeholder";
 		}

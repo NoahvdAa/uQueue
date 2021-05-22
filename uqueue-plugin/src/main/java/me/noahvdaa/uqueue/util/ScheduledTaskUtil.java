@@ -22,7 +22,7 @@ public class ScheduledTaskUtil {
 		}
 	}
 
-	private static void processQueueNotifications(QueueableServer server, UQueue plugin){
+	private static void processQueueNotifications(QueueableServer server, UQueue plugin) {
 		List<UUID> queue = server.getQueuedPlayers();
 
 		String queueSize = Integer.toString(queue.size());
@@ -68,7 +68,7 @@ public class ScheduledTaskUtil {
 		}
 	}
 
-	private static void processQueueSending(QueueableServer server, UQueue plugin){
+	private static void processQueueSending(QueueableServer server, UQueue plugin) {
 		List<UUID> queue = server.getQueuedPlayers();
 
 		boolean ignoreFull = PerServerConfigUtil.getBoolean(plugin, server.getName(), "InfiniteSlots");
@@ -174,7 +174,7 @@ public class ScheduledTaskUtil {
 			int queuePosition = queued ? queueablePlayer.getQueuedServer().getQueuePosition(queueablePlayer) : 0;
 			int queueTotal = queued ? queueablePlayer.getQueuedServer().getQueueLength() : 0;
 
-			p.getServer().sendData("uqueue:queueupdate", PluginMessageUtil.toBytes(queued, server, queuePosition, queueTotal));
+			p.getServer().sendData("uqueue:queueupdate", PluginMessageUtil.toBytes(queued, server, PerServerConfigUtil.getServerDisplayName(plugin, server), queuePosition, queueTotal));
 		}
 	}
 
