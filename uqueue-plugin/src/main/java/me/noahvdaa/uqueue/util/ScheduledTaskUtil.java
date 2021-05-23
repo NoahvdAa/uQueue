@@ -134,6 +134,11 @@ public class ScheduledTaskUtil {
 		Collection<QueueableServer> serversToPing = plugin.queueableServers.values();
 
 		for (QueueableServer server : serversToPing) {
+			if(PerServerConfigUtil.getBoolean(plugin, server.getName(), "NoPings")){
+				server.setStatus(ServerStatus.SPACE_AVAILABLE);
+				server.setAvailableSlots(9999);
+				continue;
+			}
 			if (!server.isHoldServer() && PerServerConfigUtil.getBoolean(plugin, server.getName(), "NoPingIfQueueEmpty") && server.getQueueLength() == 0) {
 				server.setStatus(null);
 				continue;

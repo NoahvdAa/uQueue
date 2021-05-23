@@ -53,6 +53,10 @@ Queueing:
   # uQueue ignores the max player count, and will always send players to the server if it is online.
   # This value can be overridden per-server in servers.yml.
   InfiniteSlots: false
+  # When this setting is enabled, servers will not be pinged and uQueue will always try to send players,
+  # even if the target server is offline or full.
+  # This value can be overridden per-server in servers.yml.
+  NoPings: false
 
 # When a player connects via an IP specified below, they'll automatically be queued for that server, if it exists.
 # Set to an empty string to disable.
