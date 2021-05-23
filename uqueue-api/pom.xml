@@ -32,7 +32,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.1.1</version>
                 <configuration>
-                    <destDir>./</destDir>
+                    <destDir>../javadocs/</destDir>
                     <reportOutputDirectory>../javadocs/</reportOutputDirectory>
                 </configuration>
             </plugin>
