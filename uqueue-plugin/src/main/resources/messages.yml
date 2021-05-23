@@ -20,6 +20,7 @@ Commands:
     NoPermissions: "&cYou don't have enough permissions to use subcommands."
   Unqueue:
     NotQueued: "&cYou aren't queued for any server."
+    NotAllowedToLeave: "&cYou aren't allowed to leave this queue."
 
 Notifications:
   QueuePosition: "&7You are in position %1%/%2% for %3%."

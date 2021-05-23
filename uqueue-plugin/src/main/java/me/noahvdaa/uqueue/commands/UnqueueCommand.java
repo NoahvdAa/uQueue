@@ -4,6 +4,7 @@ import me.noahvdaa.uqueue.UQueue;
 import me.noahvdaa.uqueue.api.util.QueueablePlayer;
 import me.noahvdaa.uqueue.api.util.QueueableServer;
 import me.noahvdaa.uqueue.util.ChatUtil;
+import me.noahvdaa.uqueue.util.PerServerConfigUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -34,6 +35,11 @@ public class UnqueueCommand extends Command {
 		}
 
 		QueueableServer queueableServer = queueablePlayer.getQueuedServer();
+
+		if(PerServerConfigUtil.getBoolean(plugin, queueableServer.getName(), "DisallowLeaving")){
+			sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Unqueue.NotAllowedToLeave"));
+			return;
+		}
 
 		queueableServer.removeFromQueue(queueablePlayer);
 		sender.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.LeftQueueFor", queueableServer.getDisplayName()));

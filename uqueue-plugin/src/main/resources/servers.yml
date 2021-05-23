@@ -21,6 +21,7 @@
 #   QueueServer: "limbo"
 #   InfiniteSlots: false
 #   NoPings: false
+#   DisallowLeaving: false
 exampleserver:
   PlayersPerSecond: 2
   RestartLength: 60
@@ -30,3 +31,4 @@ exampleserver:
   QueueServer: "limbo"
   InfiniteSlots: false
   NoPings: false
+  DisallowLeaving: false
