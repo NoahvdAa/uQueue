@@ -93,6 +93,10 @@
             <id>bungeeperms-repo</id>
             <url>http://repo.wea-ondara.net/repository/public/</url>
         </repository>
+        <repository>
+            <id>noah.pm-releases</id>
+            <url>https://repo.noah.pm/repository/maven-releases/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -144,6 +148,13 @@
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bungeecord</artifactId>
             <version>2.2.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- Shade in the Ultra Permissions API implementation. -->
+        <dependency>
+            <artifactId>UltraPermissionsPermissionUtil</artifactId>
+            <groupId>me.noahvdaa.uqueue.util.permissions</groupId>
+            <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
         <!-- Shade in the API. -->

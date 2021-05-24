@@ -17,6 +17,14 @@
 
 The documentation for this plugin can be found on my [wiki site](https://wiki.noah.pm/books/uqueue).
 
+## Submodules
+
+This project consists of multiple maven submodules:
+
+- uqueue-api: The dependency to use when integrating uQueue into a plugin. For more information, go to the section **Developer API**.
+- uqueue-plugin: The plugin to be installed on BungeeCord and Spigot servers.
+- uqueue-ultra-permissions: The Ultra Permissions integration. For an explanation as to why this is seperated, check the module's [README](https://github.com/NoahvdAa/uQueue/blob/master/uqueue-ultra-permissions/README.md).
+
 ## Translations
 
 Translated versions of messages.yml can be found in the [translations folder](https://github.com/NoahvdAa/uQueue/tree/master/translations). When creating a new translation, you should put your name right below the ASCII art, like this:

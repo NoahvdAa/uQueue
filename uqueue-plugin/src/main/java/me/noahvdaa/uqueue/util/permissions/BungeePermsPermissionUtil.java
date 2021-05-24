@@ -11,7 +11,7 @@ import java.util.List;
 
 public class BungeePermsPermissionUtil {
 
-	public static Collection<String> getBungeePermsPermissions(ProxiedPlayer p) {
+	public static Collection<String> getPermissions(ProxiedPlayer p) {
 		PermissionsManager bpPermissionsManager = BungeePerms.getInstance().getPermissionsManager();
 
 		List<BPPermission> permissions = bpPermissionsManager.getUser(p.getUniqueId()).getEffectivePerms(p.getServer().getInfo().getName(), null);
