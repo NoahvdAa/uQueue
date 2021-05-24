@@ -1,6 +1,6 @@
 name: uQueue
 main: me.noahvdaa.uqueue.BukkitPlugin
-version: 1.0.0
+version: ${project.version}
 author: NoahvdAa
 api-version: 1.13
 softdepend: [ PlaceHolderAPI ]

@@ -1,5 +1,5 @@
 name: uQueue
 main: me.noahvdaa.uqueue.UQueue
-version: 1.0.0
+version: ${project.version}
 author: NoahvdAa
 softdepends: [ BungeePerms, LuckPerms, UltraPermissions ]
