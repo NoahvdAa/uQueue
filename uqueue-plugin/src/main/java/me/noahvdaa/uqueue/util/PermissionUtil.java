@@ -30,18 +30,17 @@ public class PermissionUtil {
 
 		// Permission fetchers are split across classes to prevent ClassNotFound exceptions.
 
-		if (permissionProvider.equals("BungeePerms")) {
-			return BungeePermsPermissionUtil.getPermissions(p);
-		} else if (permissionProvider.equals("LuckPerms")) {
-			return LuckPermsPermissionUtil.getPermissions(p);
-		} else if (permissionProvider.equals("UltraPermissions")) {
-			return UltraPermissionsPermissionUtil.getPermissions(p);
+		switch (permissionProvider) {
+			case "BungeePerms":
+				return BungeePermsPermissionUtil.getPermissions(p);
+			case "LuckPerms":
+				return LuckPermsPermissionUtil.getPermissions(p);
+			case "UltraPermissions":
+				return UltraPermissionsPermissionUtil.getPermissions(p);
+			default:
+				// Fallback if permission plugin isn't officially supported, may not always work properly.
+				return p.getPermissions();
 		}
-
-		// TODO: Integrations for other permission plugins.
-
-		// Fallback if permission plugin isn't officially supported, may not always work properly.
-		return p.getPermissions();
 	}
 
 }

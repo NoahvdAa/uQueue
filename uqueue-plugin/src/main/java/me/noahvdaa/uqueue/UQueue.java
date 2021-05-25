@@ -79,7 +79,7 @@ public class UQueue extends Plugin implements UQueuePlugin {
 
 		// Register bStats metrics.
 		Metrics bStats = new Metrics(this, 11230);
-		bStats.addCustomChart(new SimplePie("permission_system", () -> PermissionUtil.getPermissionProvider()));
+		bStats.addCustomChart(new SimplePie("permission_system", PermissionUtil::getPermissionProvider));
 	}
 
 	private void initializeConfigs() {

@@ -3,10 +3,11 @@ package me.noahvdaa.uqueue.util;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.noahvdaa.uqueue.BukkitPlugin;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class PlaceholderImplementation extends PlaceholderExpansion {
 
-	private BukkitPlugin plugin;
+	private final BukkitPlugin plugin;
 
 	public PlaceholderImplementation(BukkitPlugin plugin) {
 		this.plugin = plugin;
@@ -23,22 +24,22 @@ public class PlaceholderImplementation extends PlaceholderExpansion {
 	}
 
 	@Override
-	public String getAuthor() {
+	public @NotNull String getAuthor() {
 		return "NoahvdAa";
 	}
 
 	@Override
-	public String getIdentifier() {
+	public @NotNull String getIdentifier() {
 		return "uqueue";
 	}
 
 	@Override
-	public String getVersion() {
+	public @NotNull String getVersion() {
 		return plugin.getDescription().getVersion();
 	}
 
 	@Override
-	public String onPlaceholderRequest(Player player, String identifier) {
+	public String onPlaceholderRequest(Player player, @NotNull String identifier) {
 		if (player == null || !plugin.statuses.containsKey(player.getUniqueId()))
 			return "";
 

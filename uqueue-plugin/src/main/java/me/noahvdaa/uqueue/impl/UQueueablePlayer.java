@@ -7,7 +7,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 public class UQueueablePlayer implements QueueablePlayer {
 
 	private QueueableServer server;
-	private ProxiedPlayer player;
+	private final ProxiedPlayer player;
 	private Integer connectionAttempts;
 
 	public UQueueablePlayer(ProxiedPlayer p) {

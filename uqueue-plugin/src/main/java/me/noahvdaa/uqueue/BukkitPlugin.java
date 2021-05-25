@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -40,7 +41,7 @@ public class BukkitPlugin extends JavaPlugin implements Listener, PluginMessageL
 	}
 
 	@Override
-	public void onPluginMessageReceived(String channel, Player player, byte[] bytes) {
+	public void onPluginMessageReceived(String channel, @NotNull Player player, byte[] bytes) {
 		if (!channel.equals("uqueue:queueupdate")) return;
 		PluginMessageUtil.PluginMessage message = PluginMessageUtil.parseBytes(bytes);
 		statuses.put(player.getUniqueId(), message);
