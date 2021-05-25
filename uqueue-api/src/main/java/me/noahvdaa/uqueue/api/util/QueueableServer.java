@@ -83,7 +83,7 @@ public interface QueueableServer {
 	Boolean mayQueue(QueueablePlayer player);
 
 	/**
-	 * Returns true if the server is a server that can be used to "hold" players while they're queued for a different serverr.
+	 * Returns true if the server is a server that can be used to "hold" players while they're queued for a different server.
 	 *
 	 * @return Whether or not the server is a hold server.
 	 */

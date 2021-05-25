@@ -45,7 +45,7 @@ public interface QueueablePlayer {
 	/**
 	 * Sets the amount of times the player has tried to connect to the server they're queued for.
 	 *
-	 * @param newConnectionAttempts
+	 * @param newConnectionAttempts The new value for connection attempts.
 	 */
 	void setConnectionAttempts(int newConnectionAttempts);
 
