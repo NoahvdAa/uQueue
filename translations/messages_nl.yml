@@ -23,6 +23,7 @@ Commands:
     NoPermissions: "&cJe hebt niet genoeg permissies om subcommando's te gebruiken."
   Unqueue:
     NotQueued: "&cJe staat voor geen enkele server in de rij."
+    NotAllowedToLeave: "&cJe mag de rij voor deze server niet verlaten."
 
 Notifications:
   QueuePosition: "&7Je bent in positie %1%/%2% voor %3%."
