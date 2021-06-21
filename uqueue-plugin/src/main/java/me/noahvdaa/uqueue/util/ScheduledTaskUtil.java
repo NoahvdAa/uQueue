@@ -96,7 +96,7 @@ public class ScheduledTaskUtil {
 			ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(target);
 			QueueablePlayer queueablePlayer = plugin.getPlayer(proxiedPlayer);
 
-			if (queueServer != null && queueServer.getStatus() != ServerStatus.OFFLINE && (queueIgnoreFull || queueServer.getAvailableSlots() > 0)) {
+			if (queueServer != null && !proxiedPlayer.getServer().getInfo().getName().equals(queueServer.getName()) && queueServer.getStatus() != null && queueServer.getStatus() != ServerStatus.OFFLINE && (queueIgnoreFull || queueServer.getAvailableSlots() > 0)) {
 				queueServer.setAvailableSlots(queueServer.getAvailableSlots() - 1);
 
 				proxiedPlayer.connect(queueServerInfo);
@@ -104,10 +104,6 @@ public class ScheduledTaskUtil {
 				// Do not send to both servers in the same second.
 				continue;
 			}
-
-			// Wait for them to connect to queue server first.
-			if (queueServer != null && !proxiedPlayer.getServer().getInfo().getName().equals(queueServer.getName()) && (queueIgnoreFull || queueServer.getStatus() == ServerStatus.SPACE_AVAILABLE))
-				continue;
 
 			if (dontSend) continue;
 
@@ -134,7 +130,7 @@ public class ScheduledTaskUtil {
 		Collection<QueueableServer> serversToPing = plugin.queueableServers.values();
 
 		for (QueueableServer server : serversToPing) {
-			if(PerServerConfigUtil.getBoolean(plugin, server.getName(), "NoPings")){
+			if (PerServerConfigUtil.getBoolean(plugin, server.getName(), "NoPings")) {
 				server.setStatus(ServerStatus.SPACE_AVAILABLE);
 				server.setAvailableSlots(9999);
 				continue;
