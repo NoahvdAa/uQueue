@@ -62,8 +62,9 @@ public class UQueue extends Plugin implements UQueuePlugin {
 		getProxy().getPluginManager().registerCommand(this, new UnqueueCommand(this));
 		getProxy().getPluginManager().registerCommand(this, new UQueueCommand(this));
 
-		// Register plugin message channel.
+		// Register plugin message channels.
 		getProxy().registerChannel("uqueue:queueupdate");
+		getProxy().registerChannel("uqueue:queueplayer");
 
 		// Register events.
 		getProxy().getPluginManager().registerListener(this, new PlayerListener(this));

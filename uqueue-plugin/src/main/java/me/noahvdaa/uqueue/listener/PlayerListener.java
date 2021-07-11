@@ -3,23 +3,27 @@ package me.noahvdaa.uqueue.listener;
 import me.noahvdaa.uqueue.UQueue;
 import me.noahvdaa.uqueue.api.util.QueueablePlayer;
 import me.noahvdaa.uqueue.api.util.QueueableServer;
+import me.noahvdaa.uqueue.commands.QueueCommand;
 import me.noahvdaa.uqueue.util.ChatUtil;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.ChatEvent;
-import net.md_5.bungee.api.event.PlayerDisconnectEvent;
-import net.md_5.bungee.api.event.PostLoginEvent;
-import net.md_5.bungee.api.event.ServerConnectedEvent;
+import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
 
 public class PlayerListener implements Listener {
 
 	private final UQueue plugin;
+	private final QueueCommand queueCommand;
 
 	public PlayerListener(UQueue plugin) {
 		this.plugin = plugin;
+		this.queueCommand = new QueueCommand(plugin);
 	}
 
 	@EventHandler
@@ -74,6 +78,27 @@ public class PlayerListener implements Listener {
 		if (!plugin.getConfig().getBoolean("Chat.HijackServerCommand")) return;
 		if (!e.getMessage().toLowerCase().startsWith("/server")) return;
 		e.setMessage(e.getMessage().replaceAll("^/server", "/queue"));
+	}
+
+	@EventHandler
+	public void onPluginMessage(PluginMessageEvent e) {
+		if (!e.getTag().equals("uqueue:queueplayer")) return;
+		String player;
+		String server;
+		try {
+			DataInputStream in = new DataInputStream(new ByteArrayInputStream(e.getData()));
+			player = in.readUTF();
+			server = in.readUTF();
+		} catch (IOException exception) {
+			// Swallow.
+			return;
+		}
+		String[] args = new String[1];
+		args[0] = server;
+
+		ProxiedPlayer pPlayer = plugin.getProxy().getPlayer(player);
+
+		queueCommand.execute(pPlayer, args);
 	}
 
 }

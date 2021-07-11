@@ -4,3 +4,6 @@ version: ${project.version}
 author: NoahvdAa
 api-version: 1.13
 softdepend: [ PlaceHolderAPI ]
+commands:
+  queue:
+    description: Forwards a queue request to the Bungee server.
