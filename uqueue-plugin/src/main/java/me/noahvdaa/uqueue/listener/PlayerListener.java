@@ -105,13 +105,21 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onServerConnect(ServerConnectEvent e) {
 		ServerInfo server = e.getTarget();
-		if(!PerServerConfigUtil.getBoolean(plugin, server.getName(), "DetectServerSend")) return;
+		String detectServerSend = PerServerConfigUtil.getString(plugin, server.getName(), "DetectServerSend");
+		if (detectServerSend.equalsIgnoreCase("false")) return;
 
 		ProxiedPlayer player = e.getPlayer();
 		QueueablePlayer queueablePlayer = plugin.getPlayer(player);
 		QueueableServer queueableServer = plugin.getServer(server);
 
-		if (!queueableServer.mayQueue(queueablePlayer) || player.hasPermission("uqueue.bypass." + server.getName()) || queueableServer.getAvailableSlots() > 0)
+		if (!queueableServer.mayQueue(queueablePlayer) || player.hasPermission("uqueue.bypass." + server.getName()))
+			return;
+
+		if (detectServerSend.equalsIgnoreCase("fullonly") && queueableServer.getAvailableSlots() > 0 && queueableServer.getQueueLength() == 0)
+			return;
+
+		// Are they already uQueued for this server?
+		if (queueablePlayer.isQueued() && queueablePlayer.getQueuedServer().getName().equals(queueableServer.getName()))
 			return;
 
 		// Yes, we need to queue.

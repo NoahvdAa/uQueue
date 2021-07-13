@@ -61,8 +61,12 @@ Queueing:
   # Useful in combination with forced hosts.
   # This value can be overridden per-server in servers.yml.
   DisallowLeaving: false
-  # When this setting is enabled, when a plugin sends a player to a full server, they will be queued for that server.
+  # When this setting is enabled, when a plugin sends a player to a server, they will be queued for that server.
   # Players with queue bypass permissions and players that aren't allowed to queue for this server are not affected.
+  # Possible values are:
+  # false - This feature will not be enabled.
+  # fullonly - Players will only be queued when the server they are being sent to by plugins is full.
+  # true - Players will always be queued when being sent to servers by plugins.
   # This value can be overridden per-server in servers.yml.
   DetectServerSend: false
 
@@ -79,4 +83,4 @@ ForcedHosts:
   OTHER: ""
 
 # DO NOT CHANGE THIS! THIS IS AUTOMATICALLY UPDATED BY THE PLUGIN
-configVersion: 2
+configVersion: 3

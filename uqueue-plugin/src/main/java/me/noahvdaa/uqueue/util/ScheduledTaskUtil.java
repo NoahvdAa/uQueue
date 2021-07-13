@@ -109,7 +109,7 @@ public class ScheduledTaskUtil {
 
 			if (!ignoreFull && i >= server.getAvailableSlots()) continue;
 
-			if (proxiedPlayer.getServer().getInfo().getName().equals(server.getName())) {
+			if (proxiedPlayer.getServer() != null && proxiedPlayer.getServer().getInfo().getName().equals(server.getName())) {
 				server.removeFromQueue(queueablePlayer);
 				return;
 			}

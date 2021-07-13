@@ -39,7 +39,7 @@ public class UQueue extends Plugin implements UQueuePlugin {
 	private Config messages;
 	private Config perServerConfig;
 
-	public static final int configVersion = 2;
+	public static final int configVersion = 3;
 	public static final int messagesVersion = 1;
 
 	public HashMap<String, QueueableServer> queueableServers;
