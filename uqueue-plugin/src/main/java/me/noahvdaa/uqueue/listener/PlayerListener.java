@@ -5,6 +5,7 @@ import me.noahvdaa.uqueue.api.util.QueueablePlayer;
 import me.noahvdaa.uqueue.api.util.QueueableServer;
 import me.noahvdaa.uqueue.commands.QueueCommand;
 import me.noahvdaa.uqueue.util.ChatUtil;
+import me.noahvdaa.uqueue.util.PerServerConfigUtil;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -99,6 +100,31 @@ public class PlayerListener implements Listener {
 		ProxiedPlayer pPlayer = plugin.getProxy().getPlayer(player);
 
 		queueCommand.execute(pPlayer, args);
+	}
+
+	@EventHandler
+	public void onServerConnect(ServerConnectEvent e) {
+		ServerInfo server = e.getTarget();
+		if(!PerServerConfigUtil.getBoolean(plugin, server.getName(), "DetectServerSend")) return;
+
+		ProxiedPlayer player = e.getPlayer();
+		QueueablePlayer queueablePlayer = plugin.getPlayer(player);
+		QueueableServer queueableServer = plugin.getServer(server);
+
+		if (!queueableServer.mayQueue(queueablePlayer) || player.hasPermission("uqueue.bypass." + server.getName()) || queueableServer.getAvailableSlots() > 0)
+			return;
+
+		// Yes, we need to queue.
+		e.setCancelled(true);
+
+		if (queueablePlayer.isQueued()) {
+			queueablePlayer.getQueuedServer().removeFromQueue(queueablePlayer);
+			player.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.LeftQueueFor", queueableServer.getDisplayName()));
+		}
+
+		queueableServer.addToQueue(queueablePlayer);
+		queueablePlayer.setConnectionAttempts(0);
+		player.sendMessage(ChatUtil.getConfigPlaceholderMessageAsComponent(plugin, "Commands.Queue.NowQueuedFor", queueableServer.getDisplayName()));
 	}
 
 }

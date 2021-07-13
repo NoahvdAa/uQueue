@@ -22,6 +22,7 @@
 #   InfiniteSlots: false
 #   NoPings: false
 #   DisallowLeaving: false
+#   DetectServerSend: false
 exampleserver:
   PlayersPerSecond: 2
   RestartLength: 60
@@ -32,3 +33,4 @@ exampleserver:
   InfiniteSlots: false
   NoPings: false
   DisallowLeaving: false
+  DetectServerSend: false
