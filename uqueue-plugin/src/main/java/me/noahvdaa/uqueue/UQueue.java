@@ -70,13 +70,28 @@ public class UQueue extends Plugin implements UQueuePlugin {
 		getProxy().getPluginManager().registerListener(this, new PlayerListener(this));
 
 		// Process queue.
-		getProxy().getScheduler().schedule(this, () -> ScheduledTaskUtil.processQueue(instance), 1, 1, TimeUnit.SECONDS);
+		getProxy().getScheduler().schedule(this, new Runnable() {
+			@Override
+			public void run() {
+				ScheduledTaskUtil.processQueue(instance);
+			}
+		}, 1, 1, TimeUnit.SECONDS);
 
 		// Process plugin messages for placeholders.
-		getProxy().getScheduler().schedule(this, () -> ScheduledTaskUtil.processPluginMessages(instance), 1, 1, TimeUnit.SECONDS);
+		getProxy().getScheduler().schedule(this, new Runnable() {
+			@Override
+			public void run() {
+				ScheduledTaskUtil.processPluginMessages(instance);
+			}
+		}, 1, 1, TimeUnit.SECONDS);
 
 		// Ping servers to check if they're up.
-		getProxy().getScheduler().schedule(this, () -> ScheduledTaskUtil.processServerPings(instance), 1, 1, TimeUnit.SECONDS);
+		getProxy().getScheduler().schedule(this, new Runnable() {
+			@Override
+			public void run() {
+				ScheduledTaskUtil.processServerPings(instance);
+			}
+		}, 1, 1, TimeUnit.SECONDS);
 
 		// Register bStats metrics.
 		Metrics bStats = new Metrics(this, 11230);
